@@ -55,6 +55,7 @@ a {
 
 .path-element:active {
     overflow: visible;
+    white-space: normal;
 }
 
 .news {
