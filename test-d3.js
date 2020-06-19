@@ -1,8 +1,4 @@
-var x = "Country a bunch of words words words yay";
-var index = d3.range(10);
-d3.selectAll("h3")
-  .text(x);
-
+//proof of concept with color transition
 d3.select("#map")
   .append("p")
   .text("hi. want this to be longer to see color transition")
@@ -14,6 +10,7 @@ d3.select("#map")
       .style("color", "#" + Math.floor(Math.random() * 16777215).toString(16));
   });
 
+//proof of concept with looping through a dataset
 let dataset = [1, 2, 3];
 d3.select(".news")
   .selectAll('p') //need this part to tell it to create more of these
@@ -37,13 +34,12 @@ var path = d3.geoPath()
     .projection(projection);
 
 var svg = d3.select("#map").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+    .attr("class", "svg-content")
+    .attr("preserveAspectRatio", "xMinYMin meet")
+    .attr("viewBox", "0 0 800 500");
 
 svg.append("rect")
     .attr("class", "background")
-    .attr("width", width)
-    .attr("height", height)
     .on("click", clicked);
 
 var g = svg.append("g");
