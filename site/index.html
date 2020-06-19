@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Sanborn Maps Navigator</title>
+
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" type="text/css" href="style.css" />
+
+    <!-- import the webpage's javascript file -->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/topojson.v1.min.js"></script>
+    <script src="test-d3.js" defer="true"></script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="header">
+        <nav class="main-nav">
+          <a href="">Home</a>
+          <a href="">About</a>
+        </nav>
+        <div class="path" id="path">
+          <h3 class="path-element" id="country">
+              USA
+          </h3>
+          <h3 class="path-element" id="state">
+            State
+          </h3>
+          <h3 class="path-element" id="county">
+            County
+          </h3>
+          <h3 class="path-element" id="city">
+            City
+          </h3>
+        </div>
+      </div>
+      <article class="map" id="map">
+        <p>
+          visual here
+        </p>
+      </article>
+      <div class="news" id="news">
+        News
+      </div>
+      <div class="results" id="results">
+        Results
+      </div>
+      <footer class="main-footer">The footer</footer>
+    </div>
+    <!-- include the Glitch button to show what the webpage is about and
+          to make it easier for folks to view source and remix -->
+    <div class="glitchButton" style="position:fixed;top:10px;right:10px;"></div>
+    <script src="https://button.glitch.me/button.js" defer></script>
+  </body>
+</html>

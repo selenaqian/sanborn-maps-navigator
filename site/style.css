@@ -1,0 +1,131 @@
+/* CSS files add styling rules to your content */
+
+* {
+  margin: 0px;
+}
+
+body {
+  font-family: helvetica, arial, sans-serif;
+  margin: 0;
+}
+
+.header {
+  grid-area: main-header;
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: 100vw;
+  grid-template-rows: 40px 40px;
+  grid-template-areas:
+    "nav"
+    "bar";
+  position: fixed;
+  background-color: white;
+}
+
+.main-nav {
+  background-color: #E0E0E0;
+  grid-area: nav;
+  display: flex;
+  justify-content: flex-right;
+  padding: 10px;
+}
+
+a {
+  padding-right: 15px;
+}
+
+.map {
+  grid-area: main;
+  padding: 10px;
+}
+
+.path {
+  grid-area: bar;
+  padding: 10px;
+  background-color: white;
+  display: flex;
+}
+
+.path-element {
+  padding-right: 5px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.news {
+  grid-area: sidebar-1;
+  padding: 0px 5px 0px 10px;
+}
+
+.results {
+  grid-area: sidebar-2;
+  padding: 0px 10px 0px 5px;
+}
+
+.main-footer {
+  grid-area: footer;
+  padding: 5px 10px 10px 10px;
+  text-align: center;
+  color: white;
+  background-color: darkgray;
+}
+
+.wrapper {
+  height: 100vh;
+  width: 100vw;
+  display: grid;
+  grid-gap: 10px;
+  grid-template-rows: 90px 1fr 1fr 30px;
+  grid-template-columns: 2fr 3fr;
+  grid-template-areas:
+    "main-header  main-header"
+    "main   main"
+    "sidebar-1  sidebar-2"
+    "footer  footer";
+}
+
+/*.wrapper > * {
+    border: 2px solid rgb(137,153,175);
+}*/
+
+@media (min-width: 768px) {
+  .wrapper {
+    grid-template-columns: 3fr 2fr;
+    grid-template-rows: 90px 2fr 3fr 30px;
+    grid-template-areas:
+      "main-header  main-header"
+      "main  sidebar-1"
+      "main  sidebar-2"
+      "footer  footer";
+  }
+  .news {
+    overflow-y: scroll;
+    padding-right: 10px;
+  }
+  .results {
+    overflow-y: scroll;
+    padding-left: 10px;
+  }
+}
+
+.background {
+  fill: none;
+  pointer-events: all;
+}
+
+#states {
+  fill: #aaa;
+}
+
+#states .active {
+  fill: orange;
+}
+
+#state-borders {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  pointer-events: none;
+}
