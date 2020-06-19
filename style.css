@@ -49,7 +49,12 @@ a {
 .path-element {
   padding-right: 5px;
   text-overflow: ellipsis;
+  white-space: nowrap;
   overflow: hidden;
+}
+
+.path-element:active {
+    overflow: visible;
 }
 
 .news {

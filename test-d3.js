@@ -1,7 +1,6 @@
-var x = "Country";
+var x = "Country a bunch of words words words yay";
 var index = d3.range(10);
 d3.selectAll("h3")
-  .style("color", "blue")
   .text(x);
 
 d3.select("#map")
@@ -26,8 +25,8 @@ d3.select(".news")
 let newdata = d3.json(
   "https://cdn.glitch.com/1153fcbd-92b3-4373-8225-17ad609ee2fa%2Fsanborn-maps-data-all.json?v=1591818314615").then(function(data){ console.log(data); });
 
-var width = 400,
-    height = 300,
+var width = 800,
+    height = 500,
     centered;
 
 var projection = d3.geoAlbersUsa()
