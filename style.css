@@ -40,9 +40,7 @@ a {
     display: inline-block;
     position: relative;
     width: 100%;
-    padding-bottom: 100%;
     vertical-align: top;
-    overflow: hidden;
     z-index: 0;
 }
 

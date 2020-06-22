@@ -11,7 +11,7 @@ d3.select("#map")
   });
 
 //proof of concept with looping through a dataset
-let dataset = [1, 2, 3];
+let dataset = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 d3.select(".news")
   .selectAll('p') //need this part to tell it to create more of these
   .data(dataset)
