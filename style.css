@@ -135,7 +135,7 @@ a {
 }
 
 #states .active {
-  fill: orange;
+  fill: #aaa0;
 }
 
 #state-borders {

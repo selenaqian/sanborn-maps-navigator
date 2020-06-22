@@ -46,7 +46,7 @@ d3.select("#country").on("click", function() { displayAllStateResults(sanborn);
                                              zoomout(); });
 
 let newdata = d3.json(
-  "https://cdn.glitch.com/1153fcbd-92b3-4373-8225-17ad609ee2fa%2Fsanborn-maps-data-all.json?v=1591818314615").then(function(data){ console.log(data); });
+  "https://cdn.glitch.com/1153fcbd-92b3-4373-8225-17ad609ee2fa%2Fsanborn-maps-data-all.json?v=1591818314615");
 
 let sanborn;
 d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/sanborn-maps-data-indexFIPS.json")
@@ -75,8 +75,23 @@ svg.append("rect")
 
 var g = svg.append("g");
 
+let usa;
 d3.json("https://cdn.glitch.com/1153fcbd-92b3-4373-8225-17ad609ee2fa%2Fus.json?v=1592579350323").then(function(us) {
+    usa = us;
   g.append("g")
+      .attr("id", "states")
+    .selectAll("path")
+      .data(topojson.feature(us, us.objects.counties).features)
+    .enter().append("path")
+      .attr("d", path)
+      .on("click", clicked);
+
+  g.append("path")
+      .datum(topojson.mesh(us, us.objects.counties, function(a, b) { return a !== b; }))
+      .attr("id", "state-borders")
+      .attr("d", path);
+    
+    g.append("g")
       .attr("id", "states")
     .selectAll("path")
       .data(topojson.feature(us, us.objects.states).features)
@@ -92,8 +107,6 @@ d3.json("https://cdn.glitch.com/1153fcbd-92b3-4373-8225-17ad609ee2fa%2Fus.json?v
 
 function clicked(d, i) {
   var x, y, k;
-    console.log(d);
-    console.log(centered);
 
   if (d && centered !== d) { //centers on state that was clicked
     var centroid = path.centroid(d);
@@ -108,7 +121,6 @@ function clicked(d, i) {
     k = 1;
     centered = null;
       displayAllStateResults(sanborn);
-      console.log("centered");
   }
 
     //changes styling
@@ -129,7 +141,6 @@ function zoomout() {
     centered = null;
      g.selectAll("path")
       .classed("active", centered && function(d) { return d === centered; });
-    console.log(centered);
     g.transition()
       .duration(750)
       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
