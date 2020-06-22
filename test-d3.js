@@ -79,7 +79,7 @@ let usa;
 d3.json("https://cdn.glitch.com/1153fcbd-92b3-4373-8225-17ad609ee2fa%2Fus.json?v=1592579350323").then(function(us) {
     usa = us;
   g.append("g")
-      .attr("id", "states")
+      .attr("id", "counties")
     .selectAll("path")
       .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
@@ -88,7 +88,7 @@ d3.json("https://cdn.glitch.com/1153fcbd-92b3-4373-8225-17ad609ee2fa%2Fus.json?v
 
   g.append("path")
       .datum(topojson.mesh(us, us.objects.counties, function(a, b) { return a !== b; }))
-      .attr("id", "state-borders")
+      .attr("id", "county-borders")
       .attr("d", path);
     
     g.append("g")
