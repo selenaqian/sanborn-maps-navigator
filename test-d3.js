@@ -41,6 +41,10 @@ d3.select(".news")
   .append('p')
   .text(d => d);
 
+//setting what clicking USA does
+d3.select("#country").on("click", function() { displayAllStateResults(sanborn);
+                                             zoomout(); });
+
 let newdata = d3.json(
   "https://cdn.glitch.com/1153fcbd-92b3-4373-8225-17ad609ee2fa%2Fsanborn-maps-data-all.json?v=1591818314615").then(function(data){ console.log(data); });
 
@@ -88,6 +92,8 @@ d3.json("https://cdn.glitch.com/1153fcbd-92b3-4373-8225-17ad609ee2fa%2Fus.json?v
 
 function clicked(d, i) {
   var x, y, k;
+    console.log(d);
+    console.log(centered);
 
   if (d && centered !== d) { //centers on state that was clicked
     var centroid = path.centroid(d);
@@ -95,14 +101,14 @@ function clicked(d, i) {
     y = centroid[1];
     k = 4;
     centered = d;
-      console.log(d); //to help me see what this is actually doing
-      console.log(i);
     displayAllCountyResults(sanborn[i]);
   } else { //centers back on center of map
     x = width / 2;
     y = height / 2;
     k = 1;
     centered = null;
+      displayAllStateResults(sanborn);
+      console.log("centered");
   }
 
     //changes styling
@@ -111,6 +117,20 @@ function clicked(d, i) {
 
     //zooming part
   g.transition()
+      .duration(750)
+      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+      .style("stroke-width", 1.5 / k + "px");
+}
+
+function zoomout() {
+    x = width / 2;
+    y = height / 2;
+    k = 1;
+    centered = null;
+     g.selectAll("path")
+      .classed("active", centered && function(d) { return d === centered; });
+    console.log(centered);
+    g.transition()
       .duration(750)
       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
       .style("stroke-width", 1.5 / k + "px");
@@ -248,11 +268,8 @@ function displayAllStateResults(jsonObj) {
   removeAll(state);
 
   let l = jsonObj.length;
-    console.log(l);
   for (let i = 0; i < l; i++) {
-      console.log("entered for");
     let stateObj = jsonObj[i];
-      console.log(stateObj);
 
     let div = document.createElement("div"); // create container for name and image
     let stateName = document.createElement("p"); // create text element for name
