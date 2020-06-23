@@ -20,7 +20,7 @@ const months = [
   "December"
 ];
 
-//proof of concept with color transition
+/*//proof of concept with color transition
 d3.select("#map")
   .append("p")
   .text("hi. want this to be longer to see color transition")
@@ -30,16 +30,16 @@ d3.select("#map")
       .transition()
       .duration(2000)
       .style("color", "#" + Math.floor(Math.random() * 16777215).toString(16));
-  });
+  });*/
 
-//proof of concept with looping through a dataset
+/*//proof of concept with looping through a dataset
 let dataset = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 d3.select(".news")
   .selectAll('p') //need this part to tell it to create more of these
   .data(dataset)
   .enter()
   .append('p')
-  .text(d => d);
+  .text(d => d);*/
 
 //setting what clicking USA does
 d3.select("#country").on("click", function() { displayAllStateResults(sanborn);
