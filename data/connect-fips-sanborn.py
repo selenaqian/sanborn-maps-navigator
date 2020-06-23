@@ -6,3 +6,5 @@ with open('fips.txt') as f:
 with open('sanborn-maps-data-all.json') as f:
     sanborn = json.load(f)
 
+with open('../us.json') as f:
+    us = json.load(f)
