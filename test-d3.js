@@ -55,7 +55,8 @@ d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/mas
 
 var width = 800,
     height = 500,
-    centered;
+    centered,
+    countyCentered;
 
 var projection = d3.geoAlbersUsa()
     .scale(1070)
@@ -71,7 +72,7 @@ var svg = d3.select("#map").append("svg")
 
 svg.append("rect")
     .attr("class", "background")
-    .on("click", clicked);
+    .on("click", stateClicked);
 
 var g = svg.append("g");
 
@@ -84,7 +85,7 @@ d3.json("https://cdn.glitch.com/1153fcbd-92b3-4373-8225-17ad609ee2fa%2Fus.json?v
       .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
       .attr("d", path)
-      .on("click", clicked);
+      .on("click", countyClicked);
 
   g.append("path")
       .datum(topojson.mesh(us, us.objects.counties, function(a, b) { return a !== b; }))
@@ -97,7 +98,7 @@ d3.json("https://cdn.glitch.com/1153fcbd-92b3-4373-8225-17ad609ee2fa%2Fus.json?v
       .data(topojson.feature(us, us.objects.states).features)
     .enter().append("path")
       .attr("d", path)
-      .on("click", clicked);
+      .on("click", stateClicked);
 
   g.append("path")
       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
@@ -105,7 +106,42 @@ d3.json("https://cdn.glitch.com/1153fcbd-92b3-4373-8225-17ad609ee2fa%2Fus.json?v
       .attr("d", path);
 }).catch(function(error) {throw error;});
 
-function clicked(d, i) {
+function countyClicked(d, i) {
+    console.log(d);
+    console.log(centered);
+    console.log(countyCentered);
+  var x, y, k;
+
+  if (d && countyCentered !== d) { //centers on county that was clicked
+    var centroid = path.centroid(d);
+    x = centroid[0];
+    y = centroid[1];
+    k = 10;
+    countyCentered = d;
+    if(d.id < 57) {
+        displayAllCountyResults(sanborn[i]);
+    }
+  } else { //centers back on center of map
+    x = width / 2;
+    y = height / 2;
+    k = 1;
+    countyCentered = null;
+      displayAllStateResults(sanborn);
+  }
+
+    //changes styling
+  g.selectAll("path")
+      .classed("active", countyCentered && function(d) { return d === countyCentered; });
+
+    //zooming part
+  g.transition()
+      .duration(750)
+      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+      .style("stroke-width", 1.5 / k + "px");
+}
+
+function stateClicked(d, i) {
+    console.log(d);
   var x, y, k;
 
   if (d && centered !== d) { //centers on state that was clicked
@@ -114,7 +150,9 @@ function clicked(d, i) {
     y = centroid[1];
     k = 4;
     centered = d;
-    displayAllCountyResults(sanborn[i]);
+    if(d.id < 57) {
+        displayAllCountyResults(sanborn[i]);
+    }
   } else { //centers back on center of map
     x = width / 2;
     y = height / 2;
@@ -123,7 +161,7 @@ function clicked(d, i) {
       displayAllStateResults(sanborn);
   }
 
-    //changes styling
+    //changes styling - since it uses a function, is always checking but I don't want it to do that
   g.selectAll("path")
       .classed("active", centered && function(d) { return d === centered; });
 
