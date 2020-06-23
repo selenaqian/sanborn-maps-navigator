@@ -26,11 +26,15 @@ for line in statelines:
 for line in countylines:
     line.strip()
     split_line = line.split("        ")
-    county_dictionary[split_line[1]] = int(split_line[0])
+    if split_line[1] not in county_dictionary:
+        county_dictionary[split_line[1]] = []
+    county_dictionary[split_line[1]].append(int(split_line[0]))
 print(county_dictionary)
 
 # add fips code(s) to sanborn maps file
-
+# access each_state['counties']
+# each_county['county']
+# find in county_dictionary
 
 # check fips codes on counties, remove not used, re-order
 # figure out how to convert to correct indices
