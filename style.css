@@ -135,7 +135,7 @@ a {
 }
 
 #states .active {
-  fill: #aaa0;
+  fill: none;
 }
 
 #state-borders {
@@ -152,7 +152,7 @@ a {
 }
 
 #counties .active {
-  fill: #aaa0;
+  fill: none;
 }
 
 #county-borders {
