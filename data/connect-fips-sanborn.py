@@ -26,7 +26,12 @@ for line in statelines:
 for line in countylines:
     line.strip()
     split_line = line.split("        ")
-    split_line[1] = split_line[1].split(' County')[0].upper() # to only have name not ' County' after it
+    if ' County' in split_line[1]:
+        split_line[1] = split_line[1].split(' County')[0].upper().rstrip() # to only have name not ' County' after it
+    elif ' Borough' in split_line[1]:
+        split_line[1] = split_line[1].split(' Borough')[0].upper().rstrip()
+    else:
+        split_line[1] = split_line[1].split(' Census Area')[0].upper().rstrip()
     if split_line[1] not in county_dictionary:
         county_dictionary[split_line[1]] = []
     county_dictionary[split_line[1]].append(int(split_line[0]))
@@ -46,20 +51,26 @@ def addtofix(state_name, county_name, extra):
         to_fix[state_name] = []
     to_fix[state_name].append(county_name + extra)
 
+# to initialize all fips with empty array
+for state in sanborn:
+    for county in state['counties']:
+        county['fips'] = []
+
 for state in sanborn: # access each state and find the state code - to make sure county is the actual one in the state
     state_name = state['state'].upper()
     state_min = state_dictionary[state_name]*1000
     state_max = state_min + 1000
     for county in state['counties']: # access each county in the state
-        county_name = county['county'].split(' County')[0].upper()
+        if ' County' in county['county']:
+            county_name = county['county'].split(' County')[0].upper()
+        else:# ' Census Division' in county['county']:
+            county_name = county['county'].split(' Census Division')[0].upper()
         if county_name in county_dictionary: # check if that county is in the dictionary of county fips codes
             codes = county_dictionary[county_name]
             code = 0 # will remain 0 if county is in the dictionary but not for the correct state
             for c in codes: # check the codes for that county name and check if in the desired state
                 if c > state_min and c < state_max:
                     code = c
-                    if 'fips' not in county or isinstance(county['fips'], int):
-                        county['fips'] = []
                     county['fips'].append(code)
             if code == 0: # if not in state, add to the fix list
                 addtofix(state_name, county_name, '')
