@@ -1,4 +1,5 @@
 import json
+from spellchecker import SpellChecker
 
 # load data files
 with open('fips.txt') as f:
@@ -15,6 +16,11 @@ with open('../us.json') as f:
 
 with open('county-namechanges.json') as f:
     prev2curr = json.load(f)
+
+# initialize spellchecker - will use to correct misspelled counties
+spell = SpellChecker()
+spell.word_frequency.load_words(prev2curr.keys())
+spell.known(prev2curr.keys())
 
 state_dictionary = {}
 county_dictionary = {}
@@ -60,14 +66,14 @@ for state in sanborn:
         county['fips'] = []
 
 def county_found(county_name):
-        codes = county_dictionary[county_name]
-        code = 0 # will remain 0 if county is in the dictionary but not for the correct state
-        for c in codes: # check the codes for that county name and check if in the desired state
-            if c > state_min and c < state_max:
-                code = c
-                county['fips'].append(code)
-        if code == 0: # if not in state, add to the fix list
-            addtofix(state_name, county_name, '')
+    codes = county_dictionary[county_name]
+    code = 0 # will remain 0 if county is in the dictionary but not for the correct state
+    for c in codes: # check the codes for that county name and check if in the desired state
+        if c > state_min and c < state_max:
+            code = c
+            county['fips'].append(code)
+    if code == 0: # if not in state, add to the fix list
+        addtofix(state_name, county_name, '')
 
 for state in sanborn: # access each state and find the state code - to make sure county is the actual one in the state
     state_name = state['state'].upper()
@@ -91,9 +97,29 @@ for state in sanborn: # access each state and find the state code - to make sure
                 if n in county_dictionary:
                     county_found(n)
                 else:
-                    addtofix(state_name, n, ' double')
+                    misspelled = spell.unknown([n]) # check for misspelling
+                    if len(misspelled) > 0:
+                        mis = misspelled.pop()
+                        corrected = spell.correction(mis).upper()
+                        if corrected in county_dictionary:
+                            county_found(corrected)
+                            addtofix(state_name, n, ': ' + corrected)
+                        else:
+                            addtofix(state_name, n, ' misspelled not found')
+                    else:
+                        addtofix(state_name, n, ' double')
         else: # if not found initially or with updated name
-            addtofix(state_name, county_name, ' not found')
+            misspelled = spell.unknown([county_name]) # check for misspelling
+            if len(misspelled) > 0:
+                mis = misspelled.pop()
+                corrected = spell.correction(mis).upper()
+                if corrected in county_dictionary:
+                    county_found(corrected)
+                    addtofix(state_name, county_name, ': ' + corrected)
+                else:
+                    addtofix(state_name, county_name, ' misspelled not found')
+            else:
+                addtofix(state_name, county_name, ' not found')
 
 file = open('fips-to-fix.json', 'w')
 file.write(json.dumps(to_fix))
