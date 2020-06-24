@@ -13,6 +13,9 @@ with open('sanborn-with-fips.json') as f:
 with open('../us.json') as f:
     us = json.load(f)
 
+with open('county-namechanges.json') as f:
+    prev2curr = json.load(f)
+
 state_dictionary = {}
 county_dictionary = {}
 count = 0
@@ -56,25 +59,40 @@ for state in sanborn:
     for county in state['counties']:
         county['fips'] = []
 
+def county_found(county_name):
+        codes = county_dictionary[county_name]
+        code = 0 # will remain 0 if county is in the dictionary but not for the correct state
+        for c in codes: # check the codes for that county name and check if in the desired state
+            if c > state_min and c < state_max:
+                code = c
+                county['fips'].append(code)
+        if code == 0: # if not in state, add to the fix list
+            addtofix(state_name, county_name, '')
+
 for state in sanborn: # access each state and find the state code - to make sure county is the actual one in the state
     state_name = state['state'].upper()
     state_min = state_dictionary[state_name]*1000
     state_max = state_min + 1000
-    for county in state['counties']: # access each county in the state
+    for county in state['counties']: # access each county in the state in sanborn
         if ' County' in county['county']:
             county_name = county['county'].split(' County')[0].upper()
+        elif ' Counties' in county['county']:
+            county_name = county['county'].split(' Counties')[0].upper()
         else:# ' Census Division' in county['county']:
             county_name = county['county'].split(' Census Division')[0].upper()
         if county_name in county_dictionary: # check if that county is in the dictionary of county fips codes
-            codes = county_dictionary[county_name]
-            code = 0 # will remain 0 if county is in the dictionary but not for the correct state
-            for c in codes: # check the codes for that county name and check if in the desired state
-                if c > state_min and c < state_max:
-                    code = c
-                    county['fips'].append(code)
-            if code == 0: # if not in state, add to the fix list
-                addtofix(state_name, county_name, '')
-        else: # if county not in dictionary, add to the fix list
+            county_found(county_name)
+        elif county_name in prev2curr: # if county not in dictionary, check if can replace with current name
+            county_name = prev2curr[county_name][0]
+            county_found(county_name)
+        elif ' AND ' in county_name: # has two counties
+            mult_names = county_name.split(' AND ')
+            for n in mult_names:
+                if n in county_dictionary:
+                    county_found(n)
+                else:
+                    addtofix(state_name, n, ' double')
+        else: # if not found initially or with updated name
             addtofix(state_name, county_name, ' not found')
 
 file = open('fips-to-fix.json', 'w')
