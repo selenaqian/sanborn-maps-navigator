@@ -39,6 +39,8 @@ for line in countylines:
         split_line[1] = split_line[1].split(' County')[0].upper().rstrip() # to only have name not ' County' after it
     elif ' Borough' in split_line[1]:
         split_line[1] = split_line[1].split(' Borough')[0].upper().rstrip()
+    elif ' city' in split_line[1]:
+        split_line[1] = split_line[1].split(' city')[0].upper().rstrip()
     else:
         split_line[1] = split_line[1].split(' Census Area')[0].upper().rstrip()
     if split_line[1] not in county_dictionary:
