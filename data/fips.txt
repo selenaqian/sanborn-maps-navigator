@@ -1297,8 +1297,8 @@ independent cities, parishes, boroughs) in the United States.
     24027        Howard County
     24029        Kent County
     24031        Montgomery County
-    24033        Prince George
-    24035        Queen Anne
+    24033        Prince George's
+    24035        Queen Anne's
     24037        St. Mary
     24039        Somerset County
     24041        Talbot County
