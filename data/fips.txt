@@ -2393,7 +2393,7 @@ independent cities, parishes, boroughs) in the United States.
     42077        Lehigh County
     42079        Luzerne County
     42081        Lycoming County
-    42083        Mc Kean County
+    42083        McKean County
     42085        Mercer County
     42087        Mifflin County
     42089        Monroe County
