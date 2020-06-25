@@ -1670,7 +1670,7 @@ independent cities, parishes, boroughs) in the United States.
     29181        Ripley County
     29183        St. Charles County
     29185        St. Clair County
-    29186        Ste. Genevieve County
+    29186        St. Genevieve County
     29187        St. Francois County
     29189        St. Louis County
     29195        Saline County
