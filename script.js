@@ -1,32 +1,13 @@
-const state = document.getElementById("state");
-const county = document.getElementById("county");
-const city = document.getElementById("city");
-const map = document.getElementById("map");
-const results = document.getElementById("results");
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December"
-];
-
-//setting what clicking USA does
-d3.select("#country").on("click", function() { displayAllStateResults(sanborn);
-                                             zoomout(); });
-
 let sanborn;
 d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/sanborn-with-fips.json")
     .then(function(data) { displayAllStateResults(data);
                            sanborn = data;});
+
 let usa = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/us-indexed.json");
+
+//setting what clicking USA does
+d3.select("#country").on("click", function() { displayAllStateResults(sanborn);
+                                             zoomout(); });
 
 var width = 800,
     height = 500,
@@ -84,6 +65,7 @@ function countyClicked(d, i) {
     console.log(d.properties.index);
   var x, y, k;
 
+  d3.select('#results').selectAll('*').remove();
   if (d && countyCentered !== d) { //centers on county that was clicked
     var centroid = path.centroid(d);
     x = centroid[0];
@@ -101,7 +83,7 @@ function countyClicked(d, i) {
     y = height / 2;
     k = 1;
     countyCentered = null;
-      displayAllStateResults(sanborn);
+    displayAllStateResults(sanborn);
   }
 
     //changes styling
@@ -119,6 +101,7 @@ function stateClicked(d, i) {
     console.log(d);
   var x, y, k;
 
+  d3.select('#results').selectAll('*').remove();
   if (d && centered !== d) { //centers on state that was clicked
     var centroid = path.centroid(d);
     x = centroid[0];
@@ -164,8 +147,6 @@ function zoomout() {
 // shows first/cover thumbnail for this item.
 // takes in a parameter of the entire city object.
 function displayAllItemResults(jsonObj) {
-  removeAll(results);
-  removeAll(city);
     d3.select("#city").text("> " + jsonObj["city"]).on("click", function() {
     displayAllItemResults(jsonObj);
   });
@@ -174,21 +155,10 @@ function displayAllItemResults(jsonObj) {
   for (let i = 0; i < l; i++) {
     let item = jsonObj["items"][i];
 
-    let div = document.createElement("div"); // create container for name and image
-    div.className = "results-item";
-    let itemName = document.createElement("p"); // create text element for name
-    itemName.textContent = item["name"] + " " + getDate(item["date"]);
-
-    // get the first/cover thumbnail image for this item
-    let imgUrl = item["thumbnail_urls"][0];
-    let image = document.createElement("img");
-    image.src = imgUrl;
-
-    // add elements to the div container then add to the section on the page
-    div.appendChild(itemName);
-    div.appendChild(image);
-
-    results.appendChild(div);
+    div = d3.select("#results").append("div");
+    div.classed("results-item", true).append("p").text(item["name"] + " " + getDate(item["date"]));
+    div.append("img")
+      .attr("src", item["thumbnail_urls"][0]);
   }
 }
 
@@ -196,9 +166,6 @@ function displayAllItemResults(jsonObj) {
 // shows one randomly selected image from each city - more info on random selection in the code.
 // takes in a parameter of the entire county object.
 function displayAllCityResults(jsonObj) {
-  removeAll(results);
-  removeAll(city);
-  removeAll(county);
     d3.select("#county").text("> " + jsonObj["county"]).on("click", function() {
     displayAllCityResults(jsonObj);
   });
@@ -207,28 +174,15 @@ function displayAllCityResults(jsonObj) {
   for (let i = 0; i < l; i++) {
     let city = jsonObj["cities"][i];
 
-    let div = document.createElement("div"); // create container for name and image
-    div.className = "results-item";
-    let cityName = document.createElement("p"); // create text element for name
-    cityName.textContent = city["city"];
-    cityName.onclick = function() {
-      displayAllItemResults(city);
-    };
-
     // pick a random item in the city
     let randomItemNum = Math.floor(Math.random() * city["items"].length);
     let randomItem = city["items"][randomItemNum];
-
-    // get the first/cover thumbnail image for this city
-    let imgUrl = randomItem["thumbnail_urls"][0];
-    let image = document.createElement("img");
-    image.src = imgUrl;
-
-    // add elements to the div container then add to the section on the page
-    div.appendChild(cityName);
-    div.appendChild(image);
-
-    results.appendChild(div);
+    
+    div = d3.select("#results").append("div");
+    div.classed("results-item", true).append("p").text(city["city"])
+        .on("click", function() { displayAllItemResults(city)});
+    div.append("img")
+      .attr("src", randomItem["thumbnail_urls"][0]);
   }
 }
 
@@ -236,10 +190,6 @@ function displayAllCityResults(jsonObj) {
 // shows one randomly selected image from each county - more info on random selection in the code.
 // takes in a parameter of the entire state object.
 function displayAllCountyResults(jsonObj) {
-  removeAll(results);
-  removeAll(city);
-  removeAll(county);
-  removeAll(state);
     d3.select("#state").text("> " + jsonObj["state"]).on("click", function() {
     displayAllCountyResults(jsonObj);
   });
@@ -247,14 +197,6 @@ function displayAllCountyResults(jsonObj) {
   let l = jsonObj["counties"].length;
   for (let i = 0; i < l; i++) {
     let county = jsonObj["counties"][i];
-
-    let div = document.createElement("div"); // create container for name and image
-    div.className = "results-item";
-    let countyName = document.createElement("p"); // create text element for name
-    countyName.textContent = county["county"];
-    countyName.onclick = function() {
-      displayAllCityResults(county);
-    };
 
     // pick a random city in the county
     let randomCityNum = Math.floor(
@@ -265,17 +207,12 @@ function displayAllCountyResults(jsonObj) {
     // pick a random item in the city
     let randomItemNum = Math.floor(Math.random() * randomCity["items"].length);
     let randomItem = randomCity["items"][randomItemNum];
-
-    // get the first/cover thumbnail image for this city
-    let imgUrl = randomItem["thumbnail_urls"][0];
-    let image = document.createElement("img");
-    image.src = imgUrl;
-
-    // add elements to the div container then add to the section on the page
-    div.appendChild(countyName);
-    div.appendChild(image);
-
-    results.appendChild(div);
+      
+    div = d3.select("#results").append("div");
+    div.classed("results-item", true).append("p").text(county["county"])
+      .on("click", function() { displayAllCityResults(city)});
+    div.append("img")
+      .attr("src", randomItem["thumbnail_urls"][0]);
   }
 }
 
@@ -283,22 +220,10 @@ function displayAllCountyResults(jsonObj) {
 // shows one randomly selected image from each state - more info on random selection in the code.
 // takes in a parameter of the entire data object.
 function displayAllStateResults(jsonObj) {
-  removeAll(results);
-  removeAll(city);
-  removeAll(county);
-  removeAll(state);
-
   let l = jsonObj.length;
   for (let i = 0; i < l; i++) {
     let stateObj = jsonObj[i];
 
-    let div = document.createElement("div"); // create container for name and image
-    div.className = "results-item";
-    let stateName = document.createElement("p"); // create text element for name
-    stateName.textContent = stateObj["state"];
-    stateName.onclick = function() {
-      displayAllCountyResults(stateObj);
-    };
     
     // pick a random county in the state
     let randomCountyNum = Math.floor(
@@ -315,26 +240,31 @@ function displayAllStateResults(jsonObj) {
     // pick a random item in the city
     let randomItemNum = Math.floor(Math.random() * randomCity["items"].length);
     let randomItem = randomCity["items"][randomItemNum];
-
-    // get the first/cover thumbnail image for this city
-    let imgUrl = randomItem["thumbnail_urls"][0];
-    let image = document.createElement("img");
-    image.src = imgUrl;
-
-    // add elements to the div container then add to the section on the page
-    div.appendChild(stateName);
-    div.appendChild(image);
-
-    results.appendChild(div);
+      
+    div = d3.select("#results").append("div")
+    div.classed("results-item", true).append("p")
+      .text(stateObj["state"])
+      .on("click", function() { d3.select("#results").selectAll("*").remove();
+                               displayAllCountyResults(stateObj); })
+    div.append("img")
+      .attr("src", randomItem["thumbnail_urls"][0]);
   }
 }
 
-// this function removes everything previously inside the input container
-function removeAll(container) {
-  while (container.hasChildNodes()) {
-    container.removeChild(container.firstChild);
-  }
-}
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December"
+];
 
 // writes the date in a more readable format. converts from YYYY-MM to Month YYYY.
 function getDate(date) {
