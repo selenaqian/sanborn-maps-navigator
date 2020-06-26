@@ -1,6 +1,3 @@
-let requestURL =
-  "https://cdn.glitch.com/1153fcbd-92b3-4373-8225-17ad609ee2fa%2Fsanborn-maps-data-all.json?v=1591818314615";
-let request = new XMLHttpRequest();
 const state = document.getElementById("state");
 const county = document.getElementById("county");
 const city = document.getElementById("city");
@@ -23,45 +20,145 @@ const months = [
   "December"
 ];
 
-request.open("GET", requestURL);
-request.responseType = "json";
-request.send();
-request.onload = function() {
-  const data = request.response;
-  let l = data.length;
-  updateVisual(data, "state");
-  displayAllStateResults(data);
-  country.onclick = function() {
-    displayAllStateResults(data);
-  };
-};
+//setting what clicking USA does
+d3.select("#country").on("click", function() { displayAllStateResults(sanborn);
+                                             zoomout(); });
 
-// TODO: this will change to the map later!
-// currently changes the available buttons on the visual
-function updateVisual(jsonList, parameter) {
-  removeAll(map);
-  let l = jsonList.length;
-  for (let i = 0; i < l; i++) {
-    let item = jsonList[i];
-    let myButton = document.createElement("button");
-    if (parameter == "county") {
-      myButton.textContent = item["county"];
-    } else if (parameter == "state") {
-      myButton.textContent = item["state"];
-    } else if (parameter == "city") {
-      myButton.textContent = item["city"];
+let sanborn;
+d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/sanborn-with-fips.json")
+    .then(function(data) { displayAllStateResults(data);
+                           sanborn = data;});
+
+var width = 800,
+    height = 500,
+    centered,
+    countyCentered;
+
+var projection = d3.geoAlbersUsa()
+    .scale(1070)
+    .translate([width / 2, height / 2]);
+
+var path = d3.geoPath()
+    .projection(projection);
+
+var svg = d3.select("#map").append("svg")
+    .attr("class", "svg-content")
+    .attr("preserveAspectRatio", "xMinYMin meet")
+    .attr("viewBox", "0 0 800 500");
+
+svg.append("rect")
+    .attr("class", "background")
+    .on("click", stateClicked);
+
+var g = svg.append("g");
+
+let usa;
+d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/us.json").then(function(us) {
+    usa = us;
+  g.append("g")
+      .attr("id", "counties")
+    .selectAll("path")
+      .data(topojson.feature(us, us.objects.counties).features)
+    .enter().append("path")
+      .attr("d", path)
+      .on("click", countyClicked);
+
+  g.append("path")
+      .datum(topojson.mesh(us, us.objects.counties, function(a, b) { return a !== b; }))
+      .attr("id", "county-borders")
+      .attr("d", path);
+    
+    g.append("g")
+      .attr("id", "states")
+    .selectAll("path")
+      .data(topojson.feature(us, us.objects.states).features)
+    .enter().append("path")
+      .attr("d", path)
+      .on("click", stateClicked);
+
+  g.append("path")
+      .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+      .attr("id", "state-borders")
+      .attr("d", path);
+}).catch(function(error) {throw error;});
+
+function countyClicked(d, i) {
+    console.log(d);
+    console.log(centered);
+    console.log(countyCentered);
+  var x, y, k;
+
+  if (d && countyCentered !== d) { //centers on county that was clicked
+    var centroid = path.centroid(d);
+    x = centroid[0];
+    y = centroid[1];
+    k = 10;
+    countyCentered = d;
+    if(d.id < 57) {
+        displayAllCountyResults(sanborn[i]);
     }
-    map.appendChild(myButton);
-    myButton.onclick = function() {
-      if (parameter == "county") {
-        displayAllCityResults(item);
-      } else if (parameter == "state") {
-        displayAllCountyResults(item);
-      } else if (parameter == "city") {
-        displayAllItemResults(item);
-      }
-    };
+  } else { //centers back on center of map
+    x = width / 2;
+    y = height / 2;
+    k = 1;
+    countyCentered = null;
+      displayAllStateResults(sanborn);
   }
+
+    //changes styling
+  g.selectAll("path")
+      .classed("active", countyCentered && function(d) { return d === countyCentered; });
+
+    //zooming part
+  g.transition()
+      .duration(750)
+      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+      .style("stroke-width", 1.5 / k + "px");
+}
+
+function stateClicked(d, i) {
+    console.log(d);
+  var x, y, k;
+
+  if (d && centered !== d) { //centers on state that was clicked
+    var centroid = path.centroid(d);
+    x = centroid[0];
+    y = centroid[1];
+    k = 4;
+    centered = d;
+    if(d.id < 57) {
+        displayAllCountyResults(sanborn[i]);
+    }
+  } else { //centers back on center of map
+    x = width / 2;
+    y = height / 2;
+    k = 1;
+    centered = null;
+      displayAllStateResults(sanborn);
+  }
+
+    //changes styling - since it uses a function, is always checking but I don't want it to do that
+  g.selectAll("path")
+      .classed("active", centered && function(d) { return d === centered; });
+
+    //zooming part
+  g.transition()
+      .duration(750)
+      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+      .style("stroke-width", 1.5 / k + "px");
+}
+
+function zoomout() {
+    x = width / 2;
+    y = height / 2;
+    k = 1;
+    centered = null;
+     g.selectAll("path")
+      .classed("active", centered && function(d) { return d === centered; });
+    g.transition()
+      .duration(750)
+      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+      .style("stroke-width", 1.5 / k + "px");
 }
 
 // this function creates the display for all the item results of one city.
@@ -70,20 +167,16 @@ function updateVisual(jsonList, parameter) {
 function displayAllItemResults(jsonObj) {
   removeAll(results);
   removeAll(city);
-  let myH3 = document.createElement("h3");
-  myH3.textContent = "> " + jsonObj["city"];
-  myH3.onclick = function() {
+    d3.select("#city").text("> " + jsonObj["city"]).on("click", function() {
     displayAllItemResults(jsonObj);
-  };
-  city.appendChild(myH3);
-
-  updateVisual(jsonObj, "item");
+  });
 
   let l = jsonObj["items"].length;
   for (let i = 0; i < l; i++) {
     let item = jsonObj["items"][i];
 
     let div = document.createElement("div"); // create container for name and image
+    div.className = "results-item";
     let itemName = document.createElement("p"); // create text element for name
     itemName.textContent = item["name"] + " " + getDate(item["date"]);
 
@@ -107,20 +200,16 @@ function displayAllCityResults(jsonObj) {
   removeAll(results);
   removeAll(city);
   removeAll(county);
-  let myH3 = document.createElement("h3");
-  myH3.textContent = "> " + jsonObj["county"];
-  myH3.onclick = function() {
+    d3.select("#county").text("> " + jsonObj["county"]).on("click", function() {
     displayAllCityResults(jsonObj);
-  };
-  county.appendChild(myH3);
-
-  updateVisual(jsonObj["cities"], "city");
+  });
 
   let l = jsonObj["cities"].length;
   for (let i = 0; i < l; i++) {
     let city = jsonObj["cities"][i];
 
     let div = document.createElement("div"); // create container for name and image
+    div.className = "results-item";
     let cityName = document.createElement("p"); // create text element for name
     cityName.textContent = city["city"];
     cityName.onclick = function() {
@@ -152,20 +241,16 @@ function displayAllCountyResults(jsonObj) {
   removeAll(city);
   removeAll(county);
   removeAll(state);
-  let myH3 = document.createElement("h3");
-  myH3.textContent = "> " + jsonObj["state"];
-  myH3.onclick = function() {
+    d3.select("#state").text("> " + jsonObj["state"]).on("click", function() {
     displayAllCountyResults(jsonObj);
-  };
-  state.appendChild(myH3);
-
-  updateVisual(jsonObj["counties"], "county");
+  });
 
   let l = jsonObj["counties"].length;
   for (let i = 0; i < l; i++) {
     let county = jsonObj["counties"][i];
 
     let div = document.createElement("div"); // create container for name and image
+    div.className = "results-item";
     let countyName = document.createElement("p"); // create text element for name
     countyName.textContent = county["county"];
     countyName.onclick = function() {
@@ -204,13 +289,12 @@ function displayAllStateResults(jsonObj) {
   removeAll(county);
   removeAll(state);
 
-  updateVisual(jsonObj, "state");
-
   let l = jsonObj.length;
   for (let i = 0; i < l; i++) {
     let stateObj = jsonObj[i];
 
     let div = document.createElement("div"); // create container for name and image
+    div.className = "results-item";
     let stateName = document.createElement("p"); // create text element for name
     stateName.textContent = stateObj["state"];
     stateName.onclick = function() {
