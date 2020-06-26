@@ -11,9 +11,6 @@ with open('fips.txt') as f:
 with open('sanborn-with-fips.json') as f:
     sanborn = json.load(f)
 
-with open('../us.json') as f:
-    us = json.load(f)
-
 with open('county-namechanges.json') as f:
     prev2curr = json.load(f)
 
