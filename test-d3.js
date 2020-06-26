@@ -45,11 +45,8 @@ d3.select(".news")
 d3.select("#country").on("click", function() { displayAllStateResults(sanborn);
                                              zoomout(); });
 
-let newdata = d3.json(
-  "https://cdn.glitch.com/1153fcbd-92b3-4373-8225-17ad609ee2fa%2Fsanborn-maps-data-all.json?v=1591818314615");
-
 let sanborn;
-d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/sanborn-maps-data-indexFIPS.json")
+d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/sanborn-with-fips.json")
     .then(function(data) { displayAllStateResults(data);
                            sanborn = data;});
 
@@ -77,7 +74,7 @@ svg.append("rect")
 var g = svg.append("g");
 
 let usa;
-d3.json("https://cdn.glitch.com/1153fcbd-92b3-4373-8225-17ad609ee2fa%2Fus.json?v=1592579350323").then(function(us) {
+d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/us.json").then(function(us) {
     usa = us;
   g.append("g")
       .attr("id", "counties")
@@ -191,18 +188,16 @@ function zoomout() {
 function displayAllItemResults(jsonObj) {
   removeAll(results);
   removeAll(city);
-  let myH3 = document.createElement("h3");
-  myH3.textContent = "> " + jsonObj["city"];
-  myH3.onclick = function() {
+    d3.select("#city").text("> " + jsonObj["city"]).on("click", function() {
     displayAllItemResults(jsonObj);
-  };
-  city.appendChild(myH3);
+  });
 
   let l = jsonObj["items"].length;
   for (let i = 0; i < l; i++) {
     let item = jsonObj["items"][i];
 
     let div = document.createElement("div"); // create container for name and image
+    div.className = "results-item";
     let itemName = document.createElement("p"); // create text element for name
     itemName.textContent = item["name"] + " " + getDate(item["date"]);
 
@@ -226,18 +221,16 @@ function displayAllCityResults(jsonObj) {
   removeAll(results);
   removeAll(city);
   removeAll(county);
-  let myH3 = document.createElement("h3");
-  myH3.textContent = "> " + jsonObj["county"];
-  myH3.onclick = function() {
+    d3.select("#county").text("> " + jsonObj["county"]).on("click", function() {
     displayAllCityResults(jsonObj);
-  };
-  county.appendChild(myH3);
+  });
 
   let l = jsonObj["cities"].length;
   for (let i = 0; i < l; i++) {
     let city = jsonObj["cities"][i];
 
     let div = document.createElement("div"); // create container for name and image
+    div.className = "results-item";
     let cityName = document.createElement("p"); // create text element for name
     cityName.textContent = city["city"];
     cityName.onclick = function() {
@@ -278,6 +271,7 @@ function displayAllCountyResults(jsonObj) {
     let county = jsonObj["counties"][i];
 
     let div = document.createElement("div"); // create container for name and image
+    div.className = "results-item";
     let countyName = document.createElement("p"); // create text element for name
     countyName.textContent = county["county"];
     countyName.onclick = function() {
@@ -321,6 +315,7 @@ function displayAllStateResults(jsonObj) {
     let stateObj = jsonObj[i];
 
     let div = document.createElement("div"); // create container for name and image
+    div.className = "results-item";
     let stateName = document.createElement("p"); // create text element for name
     stateName.textContent = stateObj["state"];
     stateName.onclick = function() {

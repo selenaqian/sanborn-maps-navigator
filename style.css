@@ -5,7 +5,7 @@
 }
 
 body {
-  font-family: helvetica, arial, sans-serif;
+  font-family: verdana, geneva, sans-serif;
   margin: 0;
 }
 
@@ -24,15 +24,16 @@ body {
 }
 
 .main-nav {
-  background-color: #E0E0E0;
+  font-size: 14pt;
+  background-color: white;
   grid-area: nav;
   display: flex;
-  justify-content: flex-right;
+  justify-content: center;
   padding: 10px;
 }
 
 a {
-  padding-right: 15px;
+  padding-right: 25px;
 }
 
 .map {
@@ -52,7 +53,7 @@ a {
 
 .path {
   grid-area: bar;
-  padding: 10px;
+  padding: 10px 10px 0px 10px;
   background-color: white;
   display: flex;
 }
@@ -77,6 +78,13 @@ a {
 .results {
   grid-area: sidebar-2;
   padding: 0px 10px 0px 5px;
+  display: flex;
+  flex-wrap: wrap;  
+}
+
+.results-item {
+    padding: 0px 5px 0px 0px;
+    flex-shrink: 1;
 }
 
 .main-footer {
