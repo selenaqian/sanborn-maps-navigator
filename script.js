@@ -3,8 +3,6 @@ const county = document.getElementById("county");
 const city = document.getElementById("city");
 const map = document.getElementById("map");
 const results = document.getElementById("results");
-const news = document.getElementById("news");
-const country = document.getElementById("country");
 const months = [
   "January",
   "February",
@@ -28,6 +26,7 @@ let sanborn;
 d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/sanborn-with-fips.json")
     .then(function(data) { displayAllStateResults(data);
                            sanborn = data;});
+let usa = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/us-indexed.json");
 
 var width = 800,
     height = 500,
@@ -52,9 +51,7 @@ svg.append("rect")
 
 var g = svg.append("g");
 
-let usa;
-d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/us.json").then(function(us) {
-    usa = us;
+usa.then(function(us) {
   g.append("g")
       .attr("id", "counties")
     .selectAll("path")
@@ -84,8 +81,7 @@ d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/mas
 
 function countyClicked(d, i) {
     console.log(d);
-    console.log(centered);
-    console.log(countyCentered);
+    console.log(d.properties.index);
   var x, y, k;
 
   if (d && countyCentered !== d) { //centers on county that was clicked
@@ -94,8 +90,11 @@ function countyClicked(d, i) {
     y = centroid[1];
     k = 10;
     countyCentered = d;
-    if(d.id < 57) {
-        displayAllCountyResults(sanborn[i]);
+    for (a = 0; a < d.properties.index.length; a++) {
+        let stateIndex = d.properties.index[a]["state"];
+        let countyIndex = d.properties.index[a]["county"];
+        console.log(sanborn[stateIndex]["counties"][countyIndex]);
+        displayAllCityResults(sanborn[stateIndex]["counties"][countyIndex]);
     }
   } else { //centers back on center of map
     x = width / 2;
