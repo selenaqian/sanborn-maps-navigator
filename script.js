@@ -69,7 +69,7 @@ function countyClicked(d, i) {
   var x, y, k;
 
   d3.select('#results').selectAll('*').remove();
-    g.selectAll("#county").classed("active", false);
+    g.selectAll(".county").classed("active", false);
   if (d && countyCentered !== d) { //centers on county that was clicked
     var centroid = path.centroid(d);
     x = centroid[0];
@@ -81,13 +81,17 @@ function countyClicked(d, i) {
         let countyIndex = d.properties.index[a]["county"];
         displayAllCityResults(sanborn[stateIndex]["counties"][countyIndex]);
     }
+      g.select("#c" + String(d.id)).classed("active", true);
     //zooming part
   g.transition()
       .duration(750)
       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
       .style("stroke-width", 1.5 / k + "px");
-  } else { //centers back on center of map
-    zoomout();
+  } else { //goes back to state
+      usa.then(function(us) {
+          stateClicked(topojson.feature(us, us.objects.states).features[d.properties.index[0]["state"]], d.properties.index[0]["state"]);
+      });
+    //stateClicked(topojson.feature(usa, usa.objects.states).features[d.properties.index[a]["state"]], d.properties.index[a]["state"]);
   }
 }
 
