@@ -6,7 +6,7 @@ d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/mas
 let usa = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/us-indexed.json");
 
 //setting what clicking USA does
-d3.select("#country").on("click", function() { 
+d3.select("#country").on("dblclick", function() { 
     d3.select("#results").selectAll("*").remove();
     d3.select("#state").text("");
     d3.select("#county").text("");
@@ -151,7 +151,7 @@ function zoomout() {
 // shows first/cover thumbnail for this item.
 // takes in a parameter of the entire city object.
 function displayAllItemResults(jsonObj) {
-    d3.select("#city").text("> " + jsonObj["city"]).on("click", function() {
+    d3.select("#city").text("> " + jsonObj["city"]).on("dblclick", function() {
         d3.select("#results").selectAll("*").remove();
         displayAllItemResults(jsonObj); });
 
@@ -171,7 +171,7 @@ function displayAllItemResults(jsonObj) {
 // takes in a parameter of the entire county object.
 function displayAllCityResults(jsonObj) {
     d3.select("#city").text("");
-    d3.select("#county").text("> " + jsonObj["county"]).on("click", function() {
+    d3.select("#county").text("> " + jsonObj["county"]).on("dblclick", function() {
         d3.select("#results").selectAll("*").remove();
         displayAllCityResults(jsonObj); });
 
@@ -199,7 +199,7 @@ function displayAllCityResults(jsonObj) {
 function displayAllCountyResults(jsonObj) {
     d3.select("#county").text("");
     d3.select("#city").text("");
-    d3.select("#state").text("> " + jsonObj["state"]).on("click", function() {
+    d3.select("#state").text("> " + jsonObj["state"]).on("dblclick", function() {
         d3.select("#results").selectAll("*").remove();
         displayAllCountyResults(jsonObj); });
 
