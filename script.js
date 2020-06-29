@@ -3,7 +3,7 @@ d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/mas
     .then(function(data) { displayAllStateResults(data);
                            sanborn = data;});
 
-let usa = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/us-indexed.json");
+let usa = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/us-indexed-cities.json");
 
 //setting what clicking USA does
 d3.select("#country").on("dblclick", function() { zoomout(); });
@@ -32,7 +32,23 @@ svg.append("rect")
 var g = svg.append("g");
 
 usa.then(function(us) {
-  g.append("g")
+  console.log(topojson.feature(us, us.objects.cities).features);
+    g.append("g")
+      .attr("id", "cities")
+    .selectAll("path")
+      .data(topojson.feature(us, us.objects.cities).features)
+    .enter().append("path")
+      .attr("d", path)
+    .classed("city", true)
+    .attr("id", function(d) {return "city" + d.id; })
+      .on("click", countyClicked);
+
+  g.append("path")
+      .datum(topojson.mesh(us, us.objects.cities, function(a, b) { return a !== b; }))
+      .attr("id", "city")
+      .attr("d", path);
+    
+    g.append("g")
       .attr("id", "counties")
     .selectAll("path")
       .data(topojson.feature(us, us.objects.counties).features)
