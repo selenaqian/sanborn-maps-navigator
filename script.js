@@ -44,6 +44,7 @@ usa.then(function(us) {
       .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
       .attr("d", path)
+    .attr("id", function(d) {return d.id; })
       .on("click", countyClicked);
 
   g.append("path")
@@ -57,6 +58,7 @@ usa.then(function(us) {
       .data(topojson.feature(us, us.objects.states).features)
     .enter().append("path")
       .attr("d", path)
+    .attr("id", function(d) { return d.id; })
       .on("click", stateClicked);
 
   g.append("path")
@@ -125,7 +127,8 @@ function stateClicked(d, i) {
 
     //changes styling - since it uses a function, is always checking but I don't want it to do that
   g.selectAll("path")
-      .classed("active", centered && function(d) { return d === centered; });
+      .classed("active", centered && function(d) { console.log(centered);
+                                                  return d === centered; });
 
     //zooming part
   g.transition()
