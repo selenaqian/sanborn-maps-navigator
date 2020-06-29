@@ -153,7 +153,7 @@ body {
 }
 
 #states {
-  fill: #aaa;
+  fill: #ccc;
 }
 
 #states .active {
@@ -170,7 +170,7 @@ body {
 }
 
 #counties {
-  fill: #aaa;
+  fill: #ccc;
 }
 
 #counties .active {
