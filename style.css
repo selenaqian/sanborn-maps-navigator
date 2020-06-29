@@ -32,8 +32,10 @@ body {
   padding: 10px;
 }
 
-a {
+.nav-element {
   padding-right: 25px;
+  color: black;
+  text-decoration: none;
 }
 
 .map {
@@ -93,6 +95,7 @@ a {
   text-align: center;
   color: white;
   background-color: darkgray;
+  font-size: calc(6pt + 0.5vw);
 }
 
 .wrapper {
@@ -131,6 +134,9 @@ a {
     overflow-y: scroll;
     padding-left: 10px;
   }
+    .main-footer {
+        font-size: 11pt;
+    }
 }
 
 .background {
