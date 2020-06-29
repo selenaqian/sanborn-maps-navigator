@@ -6,8 +6,13 @@ d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/mas
 let usa = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/us-indexed.json");
 
 //setting what clicking USA does
-d3.select("#country").on("click", function() { displayAllStateResults(sanborn);
-                                             zoomout(); });
+d3.select("#country").on("click", function() { 
+    d3.select("#results").selectAll("*").remove();
+    d3.select("#state").text("");
+    d3.select("#county").text("");
+    d3.select("#city").text("");
+    displayAllStateResults(sanborn);
+    zoomout(); });
 
 var width = 800,
     height = 500,
@@ -75,7 +80,6 @@ function countyClicked(d, i) {
     for (a = 0; a < d.properties.index.length; a++) {
         let stateIndex = d.properties.index[a]["state"];
         let countyIndex = d.properties.index[a]["county"];
-        console.log(sanborn[stateIndex]["counties"][countyIndex]);
         displayAllCityResults(sanborn[stateIndex]["counties"][countyIndex]);
     }
   } else { //centers back on center of map
@@ -148,8 +152,8 @@ function zoomout() {
 // takes in a parameter of the entire city object.
 function displayAllItemResults(jsonObj) {
     d3.select("#city").text("> " + jsonObj["city"]).on("click", function() {
-    displayAllItemResults(jsonObj);
-  });
+        d3.select("#results").selectAll("*").remove();
+        displayAllItemResults(jsonObj); });
 
   let l = jsonObj["items"].length;
   for (let i = 0; i < l; i++) {
@@ -166,9 +170,10 @@ function displayAllItemResults(jsonObj) {
 // shows one randomly selected image from each city - more info on random selection in the code.
 // takes in a parameter of the entire county object.
 function displayAllCityResults(jsonObj) {
+    d3.select("#city").text("");
     d3.select("#county").text("> " + jsonObj["county"]).on("click", function() {
-    displayAllCityResults(jsonObj);
-  });
+        d3.select("#results").selectAll("*").remove();
+        displayAllCityResults(jsonObj); });
 
   let l = jsonObj["cities"].length;
   for (let i = 0; i < l; i++) {
@@ -180,7 +185,9 @@ function displayAllCityResults(jsonObj) {
     
     div = d3.select("#results").append("div");
     div.classed("results-item", true).append("p").text(city["city"])
-        .on("click", function() { displayAllItemResults(city)});
+        .on("click", function() { 
+        d3.select("#results").selectAll("*").remove();
+        displayAllItemResults(city); });
     div.append("img")
       .attr("src", randomItem["thumbnail_urls"][0]);
   }
@@ -190,9 +197,11 @@ function displayAllCityResults(jsonObj) {
 // shows one randomly selected image from each county - more info on random selection in the code.
 // takes in a parameter of the entire state object.
 function displayAllCountyResults(jsonObj) {
+    d3.select("#county").text("");
+    d3.select("#city").text("");
     d3.select("#state").text("> " + jsonObj["state"]).on("click", function() {
-    displayAllCountyResults(jsonObj);
-  });
+        d3.select("#results").selectAll("*").remove();
+        displayAllCountyResults(jsonObj); });
 
   let l = jsonObj["counties"].length;
   for (let i = 0; i < l; i++) {
@@ -200,9 +209,9 @@ function displayAllCountyResults(jsonObj) {
 
     // pick a random city in the county
     let randomCityNum = Math.floor(
-      Math.random() * jsonObj["counties"][i]["cities"].length
+      Math.random() * county["cities"].length
     );
-    let randomCity = jsonObj["counties"][i]["cities"][randomCityNum];
+    let randomCity = county["cities"][randomCityNum];
 
     // pick a random item in the city
     let randomItemNum = Math.floor(Math.random() * randomCity["items"].length);
@@ -210,7 +219,9 @@ function displayAllCountyResults(jsonObj) {
       
     div = d3.select("#results").append("div");
     div.classed("results-item", true).append("p").text(county["county"])
-      .on("click", function() { displayAllCityResults(city)});
+      .on("click", function() { 
+        d3.select("#results").selectAll("*").remove();
+        displayAllCityResults(county); });
     div.append("img")
       .attr("src", randomItem["thumbnail_urls"][0]);
   }
@@ -220,16 +231,18 @@ function displayAllCountyResults(jsonObj) {
 // shows one randomly selected image from each state - more info on random selection in the code.
 // takes in a parameter of the entire data object.
 function displayAllStateResults(jsonObj) {
+    d3.select("#state").text("");
+    d3.select("#county").text("");
+    d3.select("#city").text("");
   let l = jsonObj.length;
   for (let i = 0; i < l; i++) {
     let stateObj = jsonObj[i];
-
     
     // pick a random county in the state
     let randomCountyNum = Math.floor(
-      Math.random() * jsonObj[i]["counties"].length
+      Math.random() * stateObj["counties"].length
     );
-    let randomCounty = jsonObj[i]["counties"][randomCountyNum];
+    let randomCounty = stateObj["counties"][randomCountyNum];
 
     // pick a random city in the county
     let randomCityNum = Math.floor(
