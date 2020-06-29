@@ -97,6 +97,11 @@ body {
     flex-shrink: 1;
 }
 
+.results-text {
+    text-decoration: none;
+    color: black;
+}
+
 .main-footer {
   grid-area: footer;
   padding: 5px 10px 10px 10px;

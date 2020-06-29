@@ -169,8 +169,16 @@ function displayAllItemResults(jsonObj) {
     let item = jsonObj["items"][i];
 
     div = d3.select("#results").append("div");
-    div.classed("results-item", true).append("p").text(item["name"] + " " + getDate(item["date"]));
-    div.append("img")
+    div.classed("results-item", true).append("p")
+        .append("a")
+        .text(item["name"] + " " + getDate(item["date"]))
+        .attr("href", item["item_url"])
+        .attr("target", "_blank")
+        .classed("results-text", true);
+    div.append("a")
+      .attr("href", item["item_url"])
+      .attr("target", "_blank")
+      .append("img")
       .attr("src", item["thumbnail_urls"][0]);
   }
 }
