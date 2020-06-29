@@ -6,13 +6,7 @@ d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/mas
 let usa = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/us-indexed.json");
 
 //setting what clicking USA does
-d3.select("#country").on("dblclick", function() { 
-    d3.select("#results").selectAll("*").remove();
-    d3.select("#state").text("");
-    d3.select("#county").text("");
-    d3.select("#city").text("");
-    displayAllStateResults(sanborn);
-    zoomout(); });
+d3.select("#country").on("dblclick", function() { zoomout(); });
 
 var width = 800,
     height = 500,
@@ -44,7 +38,8 @@ usa.then(function(us) {
       .data(topojson.feature(us, us.objects.counties).features)
     .enter().append("path")
       .attr("d", path)
-    .attr("id", function(d) {return d.id; })
+    .classed("county", true)
+    .attr("id", function(d) {return "c" + d.id; })
       .on("click", countyClicked);
 
   g.append("path")
@@ -58,7 +53,8 @@ usa.then(function(us) {
       .data(topojson.feature(us, us.objects.states).features)
     .enter().append("path")
       .attr("d", path)
-    .attr("id", function(d) { return d.id; })
+    .classed("state", true)
+    .attr("id", function(d) { return "s" + d.id; })
       .on("click", stateClicked);
 
   g.append("path")
@@ -73,6 +69,7 @@ function countyClicked(d, i) {
   var x, y, k;
 
   d3.select('#results').selectAll('*').remove();
+    g.selectAll("#county").classed("active", false);
   if (d && countyCentered !== d) { //centers on county that was clicked
     var centroid = path.centroid(d);
     x = centroid[0];
@@ -84,23 +81,14 @@ function countyClicked(d, i) {
         let countyIndex = d.properties.index[a]["county"];
         displayAllCityResults(sanborn[stateIndex]["counties"][countyIndex]);
     }
-  } else { //centers back on center of map
-    x = width / 2;
-    y = height / 2;
-    k = 1;
-    countyCentered = null;
-    displayAllStateResults(sanborn);
-  }
-
-    //changes styling
-  g.selectAll("path")
-      .classed("active", countyCentered && function(d) { return d === countyCentered; });
-
     //zooming part
   g.transition()
       .duration(750)
       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
       .style("stroke-width", 1.5 / k + "px");
+  } else { //centers back on center of map
+    zoomout();
+  }
 }
 
 function stateClicked(d, i) {
@@ -108,6 +96,7 @@ function stateClicked(d, i) {
   var x, y, k;
 
   d3.select('#results').selectAll('*').remove();
+    g.selectAll("path").classed("active", false);
   if (d && centered !== d) { //centers on state that was clicked
     var centroid = path.centroid(d);
     x = centroid[0];
@@ -115,21 +104,13 @@ function stateClicked(d, i) {
     k = 4;
     centered = d;
     if(d.id < 57) {
+        d3.select("#s" + String(d.id)).classed("active", true);
         displayAllCountyResults(sanborn[i]);
     }
   } else { //centers back on center of map
-    x = width / 2;
-    y = height / 2;
-    k = 1;
-    centered = null;
-      displayAllStateResults(sanborn);
+    zoomout();
   }
-
-    //changes styling - since it uses a function, is always checking but I don't want it to do that
-  g.selectAll("path")
-      .classed("active", centered && function(d) { console.log(centered);
-                                                  return d === centered; });
-
+    
     //zooming part
   g.transition()
       .duration(750)
@@ -138,12 +119,17 @@ function stateClicked(d, i) {
 }
 
 function zoomout() {
+    d3.select("#results").selectAll("*").remove();
+    d3.select("#state").text("");
+    d3.select("#county").text("");
+    d3.select("#city").text("");
+    displayAllStateResults(sanborn);
     x = width / 2;
     y = height / 2;
     k = 1;
     centered = null;
      g.selectAll("path")
-      .classed("active", centered && function(d) { return d === centered; });
+      .classed("active", false);
     g.transition()
       .duration(750)
       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
