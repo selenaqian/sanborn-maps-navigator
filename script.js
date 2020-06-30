@@ -3,7 +3,7 @@ d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/mas
     .then(function(data) { displayAllStateResults(data);
                            sanborn = data;});
 
-let cities = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/us-cities-t.json")
+let cities = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/us-cities.json")
 
 let usa = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/us-indexed.json");
 
@@ -13,7 +13,8 @@ d3.select("#country").on("dblclick", function() { zoomout(); });
 var width = 800,
     height = 500,
     centered,
-    countyCentered;
+    countyCentered,
+    cityCentered;
 
 var projection = d3.geoAlbersUsa()
     .scale(1070)
@@ -33,38 +34,47 @@ svg.append("rect")
 
 var g = svg.append("g");
 
-cities.then(function(cities) {
+Promise.all([cities, usa]).then(function(values) {
+    console.log(projection(values[0].features[0].geometry.coordinates));
     g.append("g")
         .attr("id", "cities")
-        .selectAll("path")
-        .data(topojson.feature(cities, cities.objects.cities).features)
-        .enter().append("path")
-        .attr("d", path)
+        .selectAll("circle")
+        .data(values[0].features)
+        .enter().append("circle")
+        .attr("cx", function(d) {
+               if(projection(d.geometry.coordinates)) {
+                   return projection(d.geometry.coordinates)[0];
+               }
+               else { return 0; } })
+        .attr("cy", function(d) {
+               if(projection(d.geometry.coordinates)) {
+                   return projection(d.geometry.coordinates)[1];
+               }
+               else { return 0; } })
+        .attr("r", 1)
         .classed("city", "true")
-        .on("click", function(d) {console.log(d);});
-}).catch(function(error) { throw error; })
-
-usa.then(function(us) { 
-    console.log(topojson.feature(us, us.objects.counties));
+        .attr("id", function(d) { return "city" + d.id; })
+        .on("click", cityClicked);
+    
     g.append("g")
       .attr("id", "counties")
     .selectAll("path")
-      .data(topojson.feature(us, us.objects.counties).features)
+      .data(topojson.feature(values[1], values[1].objects.counties).features)
     .enter().append("path")
       .attr("d", path)
     .classed("county", true)
-    .attr("id", function(d) {return "c" + d.id; })
+    .attr("id", function(d) { return "c" + d.id; })
       .on("click", countyClicked);
 
   g.append("path")
-      .datum(topojson.mesh(us, us.objects.counties, function(a, b) { return a !== b; }))
+      .datum(topojson.mesh(values[1], values[1].objects.counties, function(a, b) { return a !== b; }))
       .attr("id", "county-borders")
       .attr("d", path);
     
     g.append("g")
       .attr("id", "states")
     .selectAll("path")
-      .data(topojson.feature(us, us.objects.states).features)
+      .data(topojson.feature(values[1], values[1].objects.states).features)
     .enter().append("path")
       .attr("d", path)
     .classed("state", true)
@@ -72,15 +82,40 @@ usa.then(function(us) {
       .on("click", stateClicked);
 
   g.append("path")
-      .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+      .datum(topojson.mesh(values[1], values[1].objects.states, function(a, b) { return a !== b; }))
       .attr("id", "state-borders")
       .attr("d", path);
-}).catch(function(error) { throw error; });
+}).catch(function(error) { throw error; })
+
+function cityClicked(d) {
+    d3.select('#results').selectAll('*').remove();
+    if (d && countyCentered !== d) { //centers on county that was clicked
+    var centroid = path.centroid(d);
+    x = centroid[0];
+    y = centroid[1];
+    k = 15;
+    cityCentered = d;
+    let stateIndex = d.properties["state"];
+    let countyIndex = d.properties["county"];
+    let cityIndex = d.properties["city"];
+    displayAllItemResults(sanborn[stateIndex]["counties"][countyIndex]["cities"][cityIndex]);
+    g.select("#city" + String(d.id)).classed("active", true);
+    //zooming part
+  g.transition()
+      .duration(750)
+      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+      .style("stroke-width", 1.5 / k + "px");
+  } else { //goes back to county
+      usa.then(function(us) {
+          countyClicked(topojson.feature(us, us.objects.counties).features[d.properties["county"]], d.properties["county"]);
+      });
+  }
+}
 
 function countyClicked(d, i) {
     console.log(d);
     console.log(d.properties.index);
-  var x, y, k;
+  let x, y, k;
 
   d3.select('#results').selectAll('*').remove();
     g.selectAll(".county").classed("active", false);
@@ -105,13 +140,12 @@ function countyClicked(d, i) {
       usa.then(function(us) {
           stateClicked(topojson.feature(us, us.objects.states).features[d.properties.index[0]["state"]], d.properties.index[0]["state"]);
       });
-    //stateClicked(topojson.feature(usa, usa.objects.states).features[d.properties.index[a]["state"]], d.properties.index[a]["state"]);
   }
 }
 
 function stateClicked(d, i) {
     console.log(d);
-  var x, y, k;
+  let x, y, k;
 
   d3.select('#results').selectAll('*').remove();
     g.selectAll("path").classed("active", false);

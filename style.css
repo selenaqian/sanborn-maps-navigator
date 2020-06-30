@@ -194,3 +194,13 @@ body {
   stroke-linecap: round;
   pointer-events: none;
 }
+
+.city {
+    fill: #bbb;
+    r: 0.5;
+}
+
+.city:hover {
+    fill: #58D3FF;
+    r: 1.5;
+}
