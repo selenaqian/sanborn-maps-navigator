@@ -89,11 +89,11 @@ Promise.all([cities, usa]).then(function(values) {
 
 function cityClicked(d) {
     d3.select('#results').selectAll('*').remove();
-    if (d && countyCentered !== d) { //centers on county that was clicked
+    if (d && cityCentered !== d) { //centers on city that was clicked
     var centroid = path.centroid(d);
     x = centroid[0];
     y = centroid[1];
-    k = 15;
+    k = 50;
     cityCentered = d;
     let stateIndex = d.properties["state"];
     let countyIndex = d.properties["county"];
@@ -106,9 +106,7 @@ function cityClicked(d) {
       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
       .style("stroke-width", 1.5 / k + "px");
   } else { //goes back to county
-      usa.then(function(us) {
-          countyClicked(topojson.feature(us, us.objects.counties).features[d.properties["county"]], d.properties["county"]);
-      });
+          countyClicked(topojson.feature(usa, usa.objects.counties).features[d.properties["county"]], d.properties["county"]);
   }
 }
 
