@@ -97,6 +97,10 @@ body {
     flex-shrink: 1;
 }
 
+.results-item p {
+    text-align: center;
+}
+
 .results-text {
     text-decoration: none;
     color: black;

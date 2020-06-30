@@ -171,7 +171,7 @@ function displayAllItemResults(jsonObj) {
     div = d3.select("#results").append("div");
     div.classed("results-item", true).append("p")
         .append("a")
-        .text(item["name"] + " " + getDate(item["date"]))
+        .text(getDate(item["date"]))
         .attr("href", item["item_url"])
         .attr("target", "_blank")
         .classed("results-text", true);
