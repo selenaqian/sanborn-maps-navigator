@@ -195,7 +195,7 @@ body {
   pointer-events: none;
 }
 
-#city .active {
+#cities .active {
     fill: #58D3FF;
     r: 1;
 }
