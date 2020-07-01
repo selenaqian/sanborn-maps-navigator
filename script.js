@@ -34,8 +34,28 @@ svg.append("rect")
 
 var g = svg.append("g");
 
-Promise.all([cities, usa]).then(function(values) {
-    console.log(projection(values[0].features[0].geometry.coordinates));
+var idToObject = new Map();
+
+var stateIdToIndex = new Map();
+
+Promise.all([cities, usa]).then(function(values) {    
+    let counties = topojson.feature(values[1], values[1].objects.counties).features;
+    let states = topojson.feature(values[1], values[1].objects.states).features;
+    
+    for(let i = 0; i < values[1].objects.states.geometries.length; i++) {
+        stateIdToIndex.set(states[i].id, i);
+    }
+    
+    for(let i = 0; i < values[0].features.length; i++) {
+        idToObject.set(values[0].features[i].id, values[0].features[i]);
+    }
+    for(let i = 0; i < values[1].objects.counties.geometries.length; i++) {
+        idToObject.set(values[1].objects.counties.geometries[i].id, counties[i]);
+    }
+    for(let i = 0; i < values[1].objects.states.geometries.length; i++) {
+        idToObject.set(i, states[i]);
+    }
+    console.log(idToObject);
     g.append("g")
         .attr("id", "cities")
         .selectAll("circle")
@@ -89,6 +109,7 @@ Promise.all([cities, usa]).then(function(values) {
 
 function cityClicked(d) {
     d3.select('#results').selectAll('*').remove();
+    g.selectAll('.city').classed('active', false);
     if (d && cityCentered !== d) { //centers on city that was clicked
     var centroid = path.centroid(d);
     x = centroid[0];
@@ -155,7 +176,7 @@ function stateClicked(d, i) {
     centered = d;
     if(d.id < 57) {
         d3.select("#s" + String(d.id)).classed("active", true);
-        displayAllCountyResults(sanborn[i]);
+        displayAllCountyResults(sanborn[stateIdToIndex.get(d.id)]);
     }
   } else { //centers back on center of map
     zoomout();
@@ -231,10 +252,11 @@ function displayAllCityResults(jsonObj) {
     let randomItem = city["items"][randomItemNum];
     
     div = d3.select("#results").append("div");
-    div.classed("results-item", true).append("p").text(city["city"])
+    div.classed("results-item", true)
         .on("click", function() { 
-        d3.select("#results").selectAll("*").remove();
-        displayAllItemResults(city); });
+        let data_id = city["city"].replace(/\s+/g, '') + d3.select("#state").text().substr(2); //figure out the id
+        cityClicked(idToObject.get(data_id)); }) //get the data object from the mapped pairs
+        .append("p").text(city["city"]);
     div.append("img")
       .attr("src", randomItem["thumbnail_urls"][0]);
   }
@@ -265,10 +287,10 @@ function displayAllCountyResults(jsonObj) {
     let randomItem = randomCity["items"][randomItemNum];
       
     div = d3.select("#results").append("div");
-    div.classed("results-item", true).append("p").text(county["county"])
+    div.classed("results-item", true)
       .on("click", function() { 
-        d3.select("#results").selectAll("*").remove();
-        displayAllCityResults(county); });
+        countyClicked(idToObject.get(county["fips"][0])); })
+        .append("p").text(county["county"]);
     div.append("img")
       .attr("src", randomItem["thumbnail_urls"][0]);
   }
@@ -302,10 +324,12 @@ function displayAllStateResults(jsonObj) {
     let randomItem = randomCity["items"][randomItemNum];
       
     div = d3.select("#results").append("div")
-    div.classed("results-item", true).append("p")
-      .text(stateObj["state"])
-      .on("click", function() { d3.select("#results").selectAll("*").remove();
-                               displayAllCountyResults(stateObj); })
+    div.classed("results-item", true)
+      .on("click", function() { 
+        console.log(i);
+        stateClicked(idToObject.get(i)); })
+        .append("p")
+        .text(stateObj["state"]);
     div.append("img")
       .attr("src", randomItem["thumbnail_urls"][0]);
   }
