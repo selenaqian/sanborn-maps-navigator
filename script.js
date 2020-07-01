@@ -1,20 +1,22 @@
 let sanborn;
+var stateNameToId = new Map();
 d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/sanborn-with-fips.json")
     .then(function(data) { displayAllStateResults(data);
-                           sanborn = data;});
+                           sanborn = data; 
+                           for(let i = 0; i < sanborn.length; i++) {
+                               stateNameToId.set(sanborn[i]["state"], i);
+                           } });
 
 let cities = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/us-cities.json")
 
 let usa = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/us-indexed.json");
 
 //setting what clicking USA does
-d3.select("#country").on("dblclick", function() { zoomout(); });
+d3.select("#country").on("click", function() { zoomout(); });
 
 var width = 800,
     height = 500,
-    centered,
-    countyCentered,
-    cityCentered;
+    centered;
 
 var projection = d3.geoAlbersUsa()
     .scale(1070)
@@ -35,7 +37,6 @@ svg.append("rect")
 var g = svg.append("g");
 
 var idToObject = new Map();
-
 var stateIdToIndex = new Map();
 
 Promise.all([cities, usa]).then(function(values) {    
@@ -55,7 +56,6 @@ Promise.all([cities, usa]).then(function(values) {
     for(let i = 0; i < values[1].objects.states.geometries.length; i++) {
         idToObject.set(i, states[i]);
     }
-    console.log(idToObject);
     g.append("g")
         .attr("id", "cities")
         .selectAll("circle")
@@ -110,12 +110,12 @@ Promise.all([cities, usa]).then(function(values) {
 function cityClicked(d) {
     d3.select('#results').selectAll('*').remove();
     g.selectAll('.city').classed('active', false);
-    if (d && cityCentered !== d) { //centers on city that was clicked
+    if (d && centered !== d) { //centers on city that was clicked
     var centroid = path.centroid(d);
     x = centroid[0];
     y = centroid[1];
     k = 50;
-    cityCentered = d;
+    centered = d;
     let stateIndex = d.properties["state"];
     let countyIndex = d.properties["county"];
     let cityIndex = d.properties["city"];
@@ -138,12 +138,12 @@ function countyClicked(d, i) {
 
   d3.select('#results').selectAll('*').remove();
     g.selectAll(".county").classed("active", false);
-  if (d && countyCentered !== d) { //centers on county that was clicked
+  if (d && centered !== d) { //centers on county that was clicked
     var centroid = path.centroid(d);
     x = centroid[0];
     y = centroid[1];
     k = 10;
-    countyCentered = d;
+    centered = d;
     for (a = 0; a < d.properties.index.length; a++) {
         let stateIndex = d.properties.index[a]["state"];
         let countyIndex = d.properties.index[a]["county"];
@@ -211,7 +211,7 @@ function zoomout() {
 // shows first/cover thumbnail for this item.
 // takes in a parameter of the entire city object.
 function displayAllItemResults(jsonObj) {
-    d3.select("#city").text("> " + jsonObj["city"]).on("dblclick", function() {
+    d3.select("#city").text("> " + jsonObj["city"]).on("click", function() {
         d3.select("#results").selectAll("*").remove();
         displayAllItemResults(jsonObj); });
 
@@ -239,9 +239,11 @@ function displayAllItemResults(jsonObj) {
 // takes in a parameter of the entire county object.
 function displayAllCityResults(jsonObj) {
     d3.select("#city").text("");
-    d3.select("#county").text("> " + jsonObj["county"]).on("dblclick", function() {
-        d3.select("#results").selectAll("*").remove();
-        displayAllCityResults(jsonObj); });
+    d3.select("#county").text("> " + jsonObj["county"])
+        .on("click", function() { 
+            console.log(jsonObj["fips"][0]);
+            countyClicked(idToObject.get(jsonObj["fips"][0]));
+        });
 
   let l = jsonObj["cities"].length;
   for (let i = 0; i < l; i++) {
@@ -268,9 +270,9 @@ function displayAllCityResults(jsonObj) {
 function displayAllCountyResults(jsonObj) {
     d3.select("#county").text("");
     d3.select("#city").text("");
-    d3.select("#state").text("> " + jsonObj["state"]).on("dblclick", function() {
-        d3.select("#results").selectAll("*").remove();
-        displayAllCountyResults(jsonObj); });
+    d3.select("#state").text("> " + jsonObj["state"]).on("click", function() { 
+        let stateName = d3.select("#state").text().substr(2);
+        stateClicked(idToObject.get(stateNameToId.get(stateName))); });
 
   let l = jsonObj["counties"].length;
   for (let i = 0; i < l; i++) {
