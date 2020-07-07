@@ -11,6 +11,13 @@ let cities = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-
 
 let usa = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/us-indexed.json");
 
+let newsNav = [];
+for(let i = 0; i < 51; i++) {
+    d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/newspaper-navigator/photos-trimmed-" + String(i) + ".json").then(function(data) {
+        newsNav[i] = data;
+    })
+}
+
 //setting what clicking USA does
 d3.select("#country").on("click", function() { zoomout(); });
 
