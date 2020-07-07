@@ -11,11 +11,10 @@ let cities = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-
 
 let usa = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/us-indexed.json");
 
-let newsNav = [];
+var newsNav = [];
+let newsFiles = []
 for(let i = 0; i < 51; i++) {
-    d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/newspaper-navigator/photos-trimmed-" + String(i) + ".json").then(function(data) {
-        newsNav[i] = data;
-    })
+    newsFiles[i] = d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/newspaper-navigator/photos-trimmed-" + String(i) + ".json");
 }
 
 //setting what clicking USA does
@@ -112,7 +111,48 @@ Promise.all([cities, usa]).then(function(values) {
       .datum(topojson.mesh(values[1], values[1].objects.states, function(a, b) { return a !== b; }))
       .attr("id", "state-borders")
       .attr("d", path);
+    
 }).catch(function(error) { throw error; })
+
+Promise.all(newsFiles).then(function(values) {
+    for(let i = 0; i < 51; i++) {
+        newsNav[i] = values[i];
+    }
+}).then(countryNews)
+    .catch(function(error) { throw error; })
+
+// Creates display of a random news image from anywhere in the country.
+function countryNews() {
+    let randomState = newsNav[Math.floor(Math.random() * newsNav.length)];
+    let randomCityNum = Math.floor(Math.random() * Object.keys(randomState["cities"]).length);
+    let randomCityList;
+    let i = 0;
+    for(var index in randomState["cities"]) {
+        if (i == randomCityNum) {
+            randomCityList = randomState["cities"][index];
+        }
+        i++;
+    }
+    let randomItem = randomCityList[Math.floor(Math.random() * randomCityList.length)];
+    d3.select("#news").append("a")
+        .attr("href", randomItem["site_url"])
+        .attr("target", "_blank")
+        .append("img")
+        .attr("src", randomItem["url"]);
+}
+
+// Creates display of random news image from anywhere in one state.
+// i is the state's index.
+function stateNews(i) {
+    
+}
+
+// Creates display of random news image from anywhere in one city.
+// city is the city name.
+// If the city is not available in the newspaper dataset, then the function will add an extra line of text stating that there are no available photos from newspapers in that city.
+function cityNews(city) {
+    
+}
 
 function cityClicked(d) {
     d3.select('#results').selectAll('*').remove();
@@ -305,7 +345,7 @@ function displayAllCountyResults(jsonObj) {
   }
 }
 
-// this function creates the display for all the state results of the country, in alphabetical order except DC at the end.
+// this function creates the display for all the state results of the country, in alphabetical order.
 // shows one randomly selected image from each state - more info on random selection in the code.
 // takes in a parameter of the entire data object.
 function displayAllStateResults(jsonObj) {
