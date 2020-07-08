@@ -71,6 +71,13 @@ Promise.all([cities, usa]).then(function(values) {
         idToObject.set(i, states[i]);
     }
     g.append("g")
+        .selectAll("path")
+        .data(topojson.feature(values[1], values[1].objects.states).features)
+        .enter().append("path")
+        .attr("d", path)
+        .attr("fill", "#eee");
+    
+    g.append("g")
         .attr("id", "cities")
         .selectAll("circle")
         .data(values[0].features)
