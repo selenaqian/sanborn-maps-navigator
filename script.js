@@ -45,6 +45,14 @@ var g = svg.append("g");
 var idToObject = new Map();
 var stateIdToIndex = new Map();
 
+var stateColor = d3.scaleThreshold()
+    .domain([0, 500, 1000, 1500, 2000, 2500])
+    .range(["#eee", "#D0E5ED", "#71B2CA", "#137FA6", "#0E5F7D", "#0A4053"]);
+
+var countyColor = d3.scaleThreshold()
+    .domain([1, 50, 100, 150])
+    .range(["white", "#D0E5ED", "#71B2CA", "#137FA6", "#0E5F7D"]);
+
 Promise.all([cities, usa]).then(function(values) {    
     let counties = topojson.feature(values[1], values[1].objects.counties).features;
     let states = topojson.feature(values[1], values[1].objects.states).features;
@@ -90,6 +98,7 @@ Promise.all([cities, usa]).then(function(values) {
       .attr("d", path)
     .classed("county", true)
     .attr("id", function(d) { return "c" + d.id; })
+    .attr("fill", function(d) { return countyColor(d.properties.count); })
       .on("click", countyClicked);
 
   g.append("path")
@@ -97,15 +106,15 @@ Promise.all([cities, usa]).then(function(values) {
       .attr("id", "county-borders")
       .attr("d", path);
     
-    g.append("g")
-      .attr("id", "states")
-    .selectAll("path")
-      .data(topojson.feature(values[1], values[1].objects.states).features)
-    .enter().append("path")
-      .attr("d", path)
-    .classed("state", true)
-    .attr("id", function(d) { return "s" + d.id; })
-      .on("click", stateClicked);
+    g.append("g").attr("id", "states")
+        .selectAll("path")
+        .data(topojson.feature(values[1], values[1].objects.states).features)
+        .enter().append("path")
+        .attr("d", path)
+        .classed("state", true)
+        .attr("id", function(d) { return "s" + d.id; })
+        .attr("fill", function(d) { return stateColor(d.properties.count); })
+        .on("click", stateClicked);
 
   g.append("path")
       .datum(topojson.mesh(values[1], values[1].objects.states, function(a, b) { return a !== b; }))
