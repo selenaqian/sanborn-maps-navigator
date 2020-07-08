@@ -154,7 +154,7 @@ function countryNews() {
     d3.select("#news").select("a")
         .attr("href", randomItem["site_url"])
         .attr("target", "_blank")
-        .select("img").attr("style", "width:100%")
+        .select("img")
         .attr("src", randomItem["url"]);
 }
 
@@ -219,12 +219,12 @@ function cityNews(i, city) {
 function cityClicked(d) {
     d3.select('#results').selectAll('*').remove();
     g.selectAll('.city').classed('active', false);
-    if (d && centered !== d) { //centers on city that was clicked
+    if (d && centered !== d.id) { //centers on city that was clicked
         var centroid = path.centroid(d);
         x = centroid[0];
         y = centroid[1];
         k = 50;
-        centered = d;
+        centered = d.id;
         let stateIndex = d.properties["state"];
         let countyIndex = d.properties["county"];
         let cityIndex = d.properties["city"];
@@ -244,16 +244,15 @@ function cityClicked(d) {
 
 function countyClicked(d, i) {
   let x, y, k;
-
-  d3.select('#results').selectAll('*').remove();
     g.selectAll(".county").classed("active", false);
     g.selectAll('.city').classed('active', false);
-  if (d && centered !== d) { //centers on county that was clicked
+  if (d && d.properties.count > 0 && centered !== d.id) { //centers on county that was clicked
+    d3.select('#results').selectAll('*').remove();
     var centroid = path.centroid(d);
     x = centroid[0];
     y = centroid[1];
     k = 10;
-    centered = d;
+    centered = d.id;
     for (a = 0; a < d.properties.index.length; a++) {
         let stateIndex = d.properties.index[a]["state"];
         let countyIndex = d.properties.index[a]["county"];
@@ -267,37 +266,40 @@ function countyClicked(d, i) {
       .style("stroke-width", 1.5 / k + "px");
   } else { //goes back to state
       usa.then(function(us) {
-          stateClicked(topojson.feature(us, us.objects.states).features[d.properties.index[0]["state"]], d.properties.index[0]["state"]);
+          let index = Math.round(d.id/1000);
+          stateClicked(topojson.feature(us, us.objects.states).features[stateIdToIndex.get(index)], stateIdToIndex.get(index));
       });
   }
 }
 
 function stateClicked(d, i) {
+  console.log(centered);
   let x, y, k;
 
-  d3.select('#results').selectAll('*').remove();
     g.selectAll("path").classed("active", false);
     g.selectAll('.city').classed('active', false);
-  if (d && centered !== d) { //centers on state that was clicked
+  if (d && centered !== d.id) { //centers on state that was clicked
     var centroid = path.centroid(d);
     x = centroid[0];
     y = centroid[1];
     k = 4;
-    centered = d;
+    centered = d.id;
+    d3.select('#results').selectAll('*').remove();
     if(d.id < 57) {
         d3.select("#s" + String(d.id)).classed("active", true);
         displayAllCountyResults(sanborn[stateIdToIndex.get(d.id)]);
         stateNews(stateIdToIndex.get(d.id));
+        //zooming part
+        g.transition()
+            .duration(750)
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+            .style("stroke-width", 1.5 / k + "px");
     }
-  } else { //centers back on center of map
+  } else if (centered == d.id) { // want to keep everything the same
+      d3.select("#s" + String(d.id)).classed("active", true);
+  } else { // centers back on center of map
     zoomout();
   }
-    
-    //zooming part
-  g.transition()
-      .duration(750)
-      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-      .style("stroke-width", 1.5 / k + "px");
 }
 
 function zoomout() {

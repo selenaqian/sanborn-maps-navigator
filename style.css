@@ -84,6 +84,10 @@ body {
   padding: 0px 5px 0px 10px;
 }
 
+.news img {
+    width: 100%;
+}
+
 .results {
   font-size: 10pt;
   grid-area: sidebar-2;
