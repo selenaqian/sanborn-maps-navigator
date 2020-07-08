@@ -123,6 +123,7 @@ Promise.all(newsFiles).then(function(values) {
 
 // Creates display of a random news image from anywhere in the country.
 function countryNews() {
+    d3.select("#no_photo").remove();
     let randomState = newsNav[Math.floor(Math.random() * newsNav.length)];
     let randomCityNum = Math.floor(Math.random() * Object.keys(randomState["cities"]).length);
     let randomCityList;
@@ -134,47 +135,95 @@ function countryNews() {
         i++;
     }
     let randomItem = randomCityList[Math.floor(Math.random() * randomCityList.length)];
-    d3.select("#news").append("a")
+    d3.select("#news").select("a")
         .attr("href", randomItem["site_url"])
         .attr("target", "_blank")
-        .append("img")
+        .select("img").attr("style", "width:100%")
         .attr("src", randomItem["url"]);
 }
 
 // Creates display of random news image from anywhere in one state.
 // i is the state's index.
 function stateNews(i) {
-    
+    d3.select("#no_photo").remove();
+    state = newsNav[i];
+    if (Object.keys(state["cities"]).length > 0) {
+        let randomCityNum = Math.floor(Math.random() * Object.keys(state["cities"]).length);
+        let randomCityList;
+        let i = 0;
+        for(var index in state["cities"]) {
+            if (i == randomCityNum) {
+                randomCityList = state["cities"][index];
+            }
+            i++;
+        }
+        let randomItem = randomCityList[Math.floor(Math.random() * randomCityList.length)];
+        d3.select("#news").select("a")
+            .attr("href", randomItem["site_url"])
+            .attr("target", "_blank")
+            .select("img")
+            .attr("src", randomItem["url"]);
+    }
+    else {
+        d3.select("#news").select("p")
+            .append("p")
+            .attr("id", "no_photo")
+            .text("No available photos from " + state["state"]);
+    }
 }
 
 // Creates display of random news image from anywhere in one city.
 // city is the city name.
 // If the city is not available in the newspaper dataset, then the function will add an extra line of text stating that there are no available photos from newspapers in that city.
-function cityNews(city) {
-    
+function cityNews(i, city) {
+    d3.select("#no_photo").remove();
+    state = newsNav[i];
+    if (city in state["cities"]) {
+        cityList = state["cities"][city];
+        let randomItem = cityList[Math.floor(Math.random() * cityList.length)];
+        d3.select("#news").select("a")
+            .attr("href", randomItem["site_url"])
+            .attr("target", "_blank")
+            .select("img")
+            .attr("src", randomItem["url"]);
+    }
+    else {
+        let citySplit = city.split(" ");
+        console.log(citySplit);
+        let name = "";
+        for (let i = 0; i < citySplit.length; i++) {
+            name += citySplit[i].charAt(0) + citySplit[i].slice(1).toLowerCase() + " ";
+        }
+        d3.select("#news").select("p")
+            .append("p")
+            .attr("id", "no_photo")
+            .text("No available photos from " + name);
+    }
 }
 
 function cityClicked(d) {
     d3.select('#results').selectAll('*').remove();
     g.selectAll('.city').classed('active', false);
     if (d && centered !== d) { //centers on city that was clicked
-    var centroid = path.centroid(d);
-    x = centroid[0];
-    y = centroid[1];
-    k = 50;
-    centered = d;
-    let stateIndex = d.properties["state"];
-    let countyIndex = d.properties["county"];
-    let cityIndex = d.properties["city"];
-    displayAllItemResults(sanborn[stateIndex]["counties"][countyIndex]["cities"][cityIndex]);
-    g.select("#city" + String(d.id)).classed("active", true);
-    //zooming part
-  g.transition()
-      .duration(750)
-      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-      .style("stroke-width", 1.5 / k + "px");
-  } else { //goes back to county
-          countyClicked(topojson.feature(usa, usa.objects.counties).features[d.properties["county"]], d.properties["county"]);
+        var centroid = path.centroid(d);
+        x = centroid[0];
+        y = centroid[1];
+        k = 50;
+        centered = d;
+        let stateIndex = d.properties["state"];
+        let countyIndex = d.properties["county"];
+        let cityIndex = d.properties["city"];
+        displayAllItemResults(sanborn[stateIndex]["counties"][countyIndex]["cities"][cityIndex]);
+        cityNews(stateIndex, d.properties["cityName"].toUpperCase());
+        g.select("#city" + String(d.id)).classed("active", true);
+        //zooming part
+        g.transition()
+            .duration(750)
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+            .style("stroke-width", 1.5 / k + "px");
+    }
+    else { //goes back to county
+        countyClicked(topojson.feature(usa, usa.objects.counties).features[d.properties["county"]], d.properties["county"]);
   }
 }
 
@@ -185,6 +234,7 @@ function countyClicked(d, i) {
 
   d3.select('#results').selectAll('*').remove();
     g.selectAll(".county").classed("active", false);
+    g.selectAll('.city').classed('active', false);
   if (d && centered !== d) { //centers on county that was clicked
     var centroid = path.centroid(d);
     x = centroid[0];
@@ -215,6 +265,7 @@ function stateClicked(d, i) {
 
   d3.select('#results').selectAll('*').remove();
     g.selectAll("path").classed("active", false);
+    g.selectAll('.city').classed('active', false);
   if (d && centered !== d) { //centers on state that was clicked
     var centroid = path.centroid(d);
     x = centroid[0];
@@ -224,6 +275,7 @@ function stateClicked(d, i) {
     if(d.id < 57) {
         d3.select("#s" + String(d.id)).classed("active", true);
         displayAllCountyResults(sanborn[stateIdToIndex.get(d.id)]);
+        stateNews(stateIdToIndex.get(d.id));
     }
   } else { //centers back on center of map
     zoomout();
@@ -237,6 +289,7 @@ function stateClicked(d, i) {
 }
 
 function zoomout() {
+    countryNews();
     d3.select("#results").selectAll("*").remove();
     d3.select("#state").text("");
     d3.select("#county").text("");
