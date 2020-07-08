@@ -189,7 +189,6 @@ function cityNews(i, city) {
     }
     else {
         let citySplit = city.split(" ");
-        console.log(citySplit);
         let name = "";
         for (let i = 0; i < citySplit.length; i++) {
             name += citySplit[i].charAt(0) + citySplit[i].slice(1).toLowerCase() + " ";
@@ -228,8 +227,6 @@ function cityClicked(d) {
 }
 
 function countyClicked(d, i) {
-    console.log(d);
-    console.log(d.properties.index);
   let x, y, k;
 
   d3.select('#results').selectAll('*').remove();
@@ -260,7 +257,6 @@ function countyClicked(d, i) {
 }
 
 function stateClicked(d, i) {
-    console.log(d);
   let x, y, k;
 
   d3.select('#results').selectAll('*').remove();
@@ -341,7 +337,6 @@ function displayAllCityResults(jsonObj) {
     d3.select("#city").text("");
     d3.select("#county").text("> " + jsonObj["county"])
         .on("click", function() { 
-            console.log(jsonObj["fips"][0]);
             countyClicked(idToObject.get(jsonObj["fips"][0]));
         });
 
@@ -428,7 +423,6 @@ function displayAllStateResults(jsonObj) {
     div = d3.select("#results").append("div")
     div.classed("results-item", true)
       .on("click", function() { 
-        console.log(i);
         stateClicked(idToObject.get(i)); })
         .append("p")
         .text(stateObj["state"]);
