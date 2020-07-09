@@ -47,6 +47,10 @@ body {
     z-index: 0;
 }
 
+#legendTitle {
+    font-size: 14pt;
+}
+
 .svg-content {
     display: inline-block;
     top: 0;

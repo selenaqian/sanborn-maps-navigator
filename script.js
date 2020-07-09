@@ -26,7 +26,7 @@ var width = 800,
 
 var projection = d3.geoAlbersUsa()
     .scale(1070)
-    .translate([width / 2, height / 2]);
+    .translate([width / 2, height / 2 + 25]);
 
 var path = d3.geoPath()
     .projection(projection);
@@ -34,13 +34,14 @@ var path = d3.geoPath()
 var svg = d3.select("#map").append("svg")
     .attr("class", "svg-content")
     .attr("preserveAspectRatio", "xMinYMin meet")
-    .attr("viewBox", "0 0 800 500");
+    .attr("viewBox", "0 0 800 550");
 
 svg.append("rect")
     .attr("class", "background")
     .on("click", stateClicked);
 
 var g = svg.append("g");
+g.attr("transform", "translate(0, 20)")
 
 var idToObject = new Map();
 var stateIdToIndex = new Map();
@@ -53,8 +54,15 @@ var countyColor = d3.scaleThreshold()
     .domain([1, 50, 100, 150])
     .range(["white", "#D0E5ED", "#71B2CA", "#137FA6", "#0E5F7D"]);
 
-var legend = d3.legendColor().scale(stateColor);
-svg.append("g").call(legend);
+var stateLegend = d3.legendColor()
+    .scale(stateColor)
+    .orient("horizontal")
+    .shapeWidth(110)
+    .labels(["0", "1-500", "501-1000", "1001-1500", "1501-2000", ">2000"]);
+svg.append("g").attr("id", "legend")
+    .attr("transform", "translate(50, 25)").call(stateLegend)
+    .append("text").text("Number of Sanborn Maps in the State")
+    .attr("x", 175).attr("y", -5).attr("id", "legendTitle");
 
 Promise.all([cities, usa]).then(function(values) {    
     let counties = topojson.feature(values[1], values[1].objects.counties).features;
