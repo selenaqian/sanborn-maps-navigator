@@ -53,6 +53,9 @@ var countyColor = d3.scaleThreshold()
     .domain([1, 50, 100, 150])
     .range(["white", "#D0E5ED", "#71B2CA", "#137FA6", "#0E5F7D"]);
 
+var legend = d3.legendColor().scale(stateColor);
+svg.append("g").call(legend);
+
 Promise.all([cities, usa]).then(function(values) {    
     let counties = topojson.feature(values[1], values[1].objects.counties).features;
     let states = topojson.feature(values[1], values[1].objects.states).features;
@@ -273,7 +276,6 @@ function countyClicked(d, i) {
 }
 
 function stateClicked(d, i) {
-  console.log(centered);
   let x, y, k;
 
     g.selectAll("path").classed("active", false);
@@ -369,7 +371,9 @@ function displayAllCityResults(jsonObj) {
     div = d3.select("#results").append("div");
     div.classed("results-item", true)
         .on("click", function() { 
-        let data_id = city["city"].replace(/\s+/g, '') + d3.select("#state").text().substr(2); //figure out the id
+        let data_id = city["city"].replace(/\s+/g, '') + d3.select("#state").text().substr(2).replace(/\s+/g, ''); //figure out the id
+        console.log(data_id);
+        console.log(idToObject.get(data_id));
         cityClicked(idToObject.get(data_id)); }) //get the data object from the mapped pairs
         .append("p").text(city["city"]);
     div.append("img")
