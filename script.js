@@ -24,6 +24,8 @@ var width = 800,
     height = 500,
     centered;
 
+var x, y, k;
+
 var projection = d3.geoAlbersUsa()
     .scale(1070)
     .translate([width/2, height/2 + 45]);
@@ -41,6 +43,9 @@ svg.append("rect")
     .on("click", stateClicked);
 
 var g = svg.append("g");
+svg.append("text")
+    .attr("id", "cityError")
+    .attr("transform", "translate(200, 240)");
 
 var idToObject = new Map();
 var stateIdToIndex = new Map();
@@ -234,13 +239,20 @@ function cityNews(i, city) {
 }
 
 function cityClicked(d) {
-    d3.select('#results').selectAll('*').remove();
-    d3.select("#legend").selectAll("*").remove();
-    g.selectAll('.city').classed('active', false);
+    console.log(d);
+    console.log(x, y, k);
     if (d && centered !== d.id) { //centers on city that was clicked
-        var centroid = path.centroid(d);
-        x = centroid[0];
-        y = centroid[1];
+        d3.select('#results').selectAll('*').remove();
+        d3.select("#cityError").text("");
+        d3.select("#legend").selectAll("*").remove();
+        g.selectAll('.city').classed('active', false);
+        if (d.geometry.coordinates[0] !== 0 || d.geometry.coordinates[1] !== 0) {
+            var centroid = path.centroid(d);
+            x = centroid[0];
+            y = centroid[1];
+        } else {
+            d3.select("#cityError").text("City coordinates not currently available.");
+        }
         k = 50;
         centered = d.id;
         let stateIndex = d.properties["state"];
@@ -255,16 +267,16 @@ function cityClicked(d) {
             .attr("transform", "translate(" + width/2 + "," + height/2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
             .style("stroke-width", 1.5/k + "px");
     }
-    else { //goes back to county
+/**    else { //goes back to county
         countyClicked(topojson.feature(usa, usa.objects.counties).features[d.properties["county"]], d.properties["county"]);
-  }
+  }*/
 }
 
 function countyClicked(d, i) {
-  let x, y, k;
     g.selectAll(".county").classed("active", false);
     g.selectAll('.city').classed('active', false);
     d3.select("#legend").selectAll("*").remove();
+    d3.select("#cityError").text("");
   if (d && d.properties.count > 0 && centered !== d.id) { //centers on county that was clicked
     d3.select('#results').selectAll('*').remove();
     var centroid = path.centroid(d);
@@ -292,11 +304,10 @@ function countyClicked(d, i) {
 }
 
 function stateClicked(d, i) {
-  let x, y, k;
-
     g.selectAll("path").classed("active", false);
     g.selectAll('.city').classed('active', false);
     d3.select("#legend").selectAll("*").remove();
+    d3.select("#cityError").text("");
     d3.select("#legend")
         .attr("transform", "translate(75, 25)").call(countyLegend)
         .append("text").text("Number of Sanborn Maps from the County")
@@ -398,8 +409,6 @@ function displayAllCityResults(jsonObj) {
     div.classed("results-item", true)
         .on("click", function() { 
         let data_id = city["city"].replace(/\s+/g, '') + d3.select("#state").text().substr(2).replace(/\s+/g, ''); //figure out the id
-        console.log(data_id);
-        console.log(idToObject.get(data_id));
         cityClicked(idToObject.get(data_id)); }) //get the data object from the mapped pairs
         .append("p").text(city["city"]);
     div.append("img")
