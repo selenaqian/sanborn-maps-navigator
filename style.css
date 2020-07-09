@@ -51,6 +51,10 @@ body {
     font-size: 14pt;
 }
 
+.swatch {
+    stroke: #0A4053;
+}
+
 .svg-content {
     display: inline-block;
     top: 0;

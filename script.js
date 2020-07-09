@@ -26,7 +26,7 @@ var width = 800,
 
 var projection = d3.geoAlbersUsa()
     .scale(1070)
-    .translate([width / 2, height / 2 + 25]);
+    .translate([width/2, height/2 + 45]);
 
 var path = d3.geoPath()
     .projection(projection);
@@ -41,7 +41,6 @@ svg.append("rect")
     .on("click", stateClicked);
 
 var g = svg.append("g");
-g.attr("transform", "translate(0, 20)")
 
 var idToObject = new Map();
 var stateIdToIndex = new Map();
@@ -50,19 +49,26 @@ var stateColor = d3.scaleThreshold()
     .domain([0, 500, 1000, 1500, 2000, 2500])
     .range(["#eee", "#D0E5ED", "#71B2CA", "#137FA6", "#0E5F7D", "#0A4053"]);
 
-var countyColor = d3.scaleThreshold()
-    .domain([1, 50, 100, 150])
-    .range(["white", "#D0E5ED", "#71B2CA", "#137FA6", "#0E5F7D"]);
-
 var stateLegend = d3.legendColor()
     .scale(stateColor)
     .orient("horizontal")
     .shapeWidth(110)
     .labels(["0", "1-500", "501-1000", "1001-1500", "1501-2000", ">2000"]);
+
+var countyColor = d3.scaleThreshold()
+    .domain([1, 50, 100, 150])
+    .range(["white", "#D0E5ED", "#71B2CA", "#137FA6", "#0E5F7D"]);
+
+var countyLegend = d3.legendColor()
+    .scale(countyColor)
+    .orient("horizontal")
+    .shapeWidth(110)
+    .labels(["0", "1-50", "51-100", "100-150", ">150"]);
+
 svg.append("g").attr("id", "legend")
     .attr("transform", "translate(50, 25)").call(stateLegend)
-    .append("text").text("Number of Sanborn Maps in the State")
-    .attr("x", 175).attr("y", -5).attr("id", "legendTitle");
+    .append("text").text("Number of Sanborn Maps from the State")
+    .attr("x", 150).attr("y", -5).attr("id", "legendTitle");
 
 Promise.all([cities, usa]).then(function(values) {    
     let counties = topojson.feature(values[1], values[1].objects.counties).features;
@@ -229,6 +235,7 @@ function cityNews(i, city) {
 
 function cityClicked(d) {
     d3.select('#results').selectAll('*').remove();
+    d3.select("#legend").selectAll("*").remove();
     g.selectAll('.city').classed('active', false);
     if (d && centered !== d.id) { //centers on city that was clicked
         var centroid = path.centroid(d);
@@ -245,8 +252,8 @@ function cityClicked(d) {
         //zooming part
         g.transition()
             .duration(750)
-            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-            .style("stroke-width", 1.5 / k + "px");
+            .attr("transform", "translate(" + width/2 + "," + height/2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+            .style("stroke-width", 1.5/k + "px");
     }
     else { //goes back to county
         countyClicked(topojson.feature(usa, usa.objects.counties).features[d.properties["county"]], d.properties["county"]);
@@ -257,6 +264,7 @@ function countyClicked(d, i) {
   let x, y, k;
     g.selectAll(".county").classed("active", false);
     g.selectAll('.city').classed('active', false);
+    d3.select("#legend").selectAll("*").remove();
   if (d && d.properties.count > 0 && centered !== d.id) { //centers on county that was clicked
     d3.select('#results').selectAll('*').remove();
     var centroid = path.centroid(d);
@@ -273,7 +281,7 @@ function countyClicked(d, i) {
     //zooming part
   g.transition()
       .duration(750)
-      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+      .attr("transform", "translate(" + width/2 + "," + height/2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
       .style("stroke-width", 1.5 / k + "px");
   } else { //goes back to state
       usa.then(function(us) {
@@ -288,6 +296,11 @@ function stateClicked(d, i) {
 
     g.selectAll("path").classed("active", false);
     g.selectAll('.city').classed('active', false);
+    d3.select("#legend").selectAll("*").remove();
+    d3.select("#legend")
+        .attr("transform", "translate(75, 25)").call(countyLegend)
+        .append("text").text("Number of Sanborn Maps from the County")
+        .attr("x", 100).attr("y", -5).attr("id", "legendTitle");
   if (d && centered !== d.id) { //centers on state that was clicked
     var centroid = path.centroid(d);
     x = centroid[0];
@@ -302,8 +315,8 @@ function stateClicked(d, i) {
         //zooming part
         g.transition()
             .duration(750)
-            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-            .style("stroke-width", 1.5 / k + "px");
+            .attr("transform", "translate(" + width/2 + "," + height/2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+            .style("stroke-width", 1.5/k + "px");
     }
   } else if (centered == d.id) { // want to keep everything the same
       d3.select("#s" + String(d.id)).classed("active", true);
@@ -318,17 +331,22 @@ function zoomout() {
     d3.select("#state").text("");
     d3.select("#county").text("");
     d3.select("#city").text("");
+    d3.select("#legend").selectAll("*").remove();
+    d3.select("#legend")
+        .attr("transform", "translate(50, 25)").call(stateLegend)
+        .append("text").text("Number of Sanborn Maps from the State")
+        .attr("x", 150).attr("y", -5).attr("id", "legendTitle");
     displayAllStateResults(sanborn);
-    x = width / 2;
-    y = height / 2;
+    x = width/2;
+    y = height/2;
     k = 1;
     centered = null;
      g.selectAll("path")
       .classed("active", false);
     g.transition()
       .duration(750)
-      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-      .style("stroke-width", 1.5 / k + "px");
+      .attr("transform", "translate(" + width/2 + "," + (height/2+15) + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+      .style("stroke-width", 1.5/k + "px");
 }
 
 // this function creates the display for all the item results of one city.
