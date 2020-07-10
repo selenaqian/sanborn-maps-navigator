@@ -1,3 +1,5 @@
+d3.select(".close").on("click", function() { d3.select(".modal").attr("style", "display: none")})
+
 let sanborn;
 var stateNameToId = new Map();
 d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/sanborn-with-fips.json")
@@ -162,6 +164,7 @@ Promise.all(newsFiles).then(function(values) {
 // Creates display of a random news image from anywhere in the country.
 function countryNews() {
     d3.select("#no_photo").remove();
+    d3.select("#news").select("p").text("Random Newspaper Image from the USA");
     let randomState = newsNav[Math.floor(Math.random() * newsNav.length)];
     let randomCityNum = Math.floor(Math.random() * Object.keys(randomState["cities"]).length);
     let randomCityList;
@@ -186,6 +189,7 @@ function stateNews(i) {
     d3.select("#no_photo").remove();
     state = newsNav[i];
     if (Object.keys(state["cities"]).length > 0) {
+        d3.select("#news").select("p").text("Random Newspaper Image from " + state["state"]);
         let randomCityNum = Math.floor(Math.random() * Object.keys(state["cities"]).length);
         let randomCityList;
         let i = 0;
@@ -215,8 +219,14 @@ function stateNews(i) {
 // If the city is not available in the newspaper dataset, then the function will add an extra line of text stating that there are no available photos from newspapers in that city.
 function cityNews(i, city) {
     d3.select("#no_photo").remove();
+    let citySplit = city.split(" ");
+    let name = "";
+    for (let i = 0; i < citySplit.length; i++) {
+        name += citySplit[i].charAt(0) + citySplit[i].slice(1).toLowerCase() + " ";
+    }
     state = newsNav[i];
     if (city in state["cities"]) {
+        d3.select("#news").select("p").text("Random Newspaper Image from " + name);
         cityList = state["cities"][city];
         let randomItem = cityList[Math.floor(Math.random() * cityList.length)];
         d3.select("#news").select("a")
@@ -226,11 +236,6 @@ function cityNews(i, city) {
             .attr("src", randomItem["url"]);
     }
     else {
-        let citySplit = city.split(" ");
-        let name = "";
-        for (let i = 0; i < citySplit.length; i++) {
-            name += citySplit[i].charAt(0) + citySplit[i].slice(1).toLowerCase() + " ";
-        }
         d3.select("#news").select("p")
             .append("p")
             .attr("id", "no_photo")
