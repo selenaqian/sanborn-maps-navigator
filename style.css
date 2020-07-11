@@ -91,7 +91,7 @@ body {
 
 /* Caption text */
 .text {
-  color: gray;
+  color: #666;
   font-size: calc(6pt + 0.5vw);
   padding: 3px 12px;
   width: 100%;
@@ -263,10 +263,6 @@ body {
     "sidebar-1  sidebar-2"
     "footer  footer";
 }
-
-/*.wrapper > * {
-    border: 2px solid rgb(137,153,175);
-}*/
 
 @media (min-width: 768px) {
     .modal-content {
