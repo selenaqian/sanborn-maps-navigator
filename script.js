@@ -206,10 +206,10 @@ function countryNews() {
     }
     let randomItem = randomCityList[Math.floor(Math.random() * randomCityList.length)];
     d3.select("#news").select("a")
-        .attr("href", randomItem["site_url"])
+        .attr("href", "https://chroniclingamerica.loc.gov/lccn/" + randomItem["site_url"])
         .attr("target", "_blank")
         .select("img")
-        .attr("src", randomItem["url"]);
+        .attr("src", "https://news-navigator.labs.loc.gov/data/" + randomItem["url"]);
 }
 
 // Creates display of random news image from anywhere in one state.
@@ -230,10 +230,10 @@ function stateNews(i) {
         }
         let randomItem = randomCityList[Math.floor(Math.random() * randomCityList.length)];
         d3.select("#news").select("a")
-            .attr("href", randomItem["site_url"])
+            .attr("href", "https://chroniclingamerica.loc.gov/lccn/" + randomItem["site_url"])
             .attr("target", "_blank")
             .select("img")
-            .attr("src", randomItem["url"]);
+            .attr("src", "https://news-navigator.labs.loc.gov/data/" + randomItem["url"]);
     }
     else {
         d3.select("#news").select("p")
@@ -259,10 +259,10 @@ function cityNews(i, city) {
         cityList = state["cities"][city];
         let randomItem = cityList[Math.floor(Math.random() * cityList.length)];
         d3.select("#news").select("a")
-            .attr("href", randomItem["site_url"])
+            .attr("href", "https://chroniclingamerica.loc.gov/lccn/" + randomItem["site_url"])
             .attr("target", "_blank")
             .select("img")
-            .attr("src", randomItem["url"]);
+            .attr("src", "https://news-navigator.labs.loc.gov/data/" + randomItem["url"]);
     }
     else {
         d3.select("#news").select("p")
