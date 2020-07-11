@@ -1,5 +1,34 @@
 d3.select(".close").on("click", function() { d3.select(".modal").attr("style", "display: none")})
 
+var slideIndex = 1;
+showSlides(slideIndex);
+
+// Next/previous controls
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+// Thumbnail image controls
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides");
+  var dots = document.getElementsByClassName("dot");
+  if (n > slides.length) {slideIndex = 1}
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";
+  }
+  for (i = 0; i < dots.length; i++) {
+      dots[i].className = dots[i].className.replace(" active", "");
+  }
+  slides[slideIndex-1].style.display = "block";
+  dots[slideIndex-1].className += " active";
+}
+
 let sanborn;
 var stateNameToId = new Map();
 d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/sanborn-with-fips.json")
@@ -164,7 +193,7 @@ Promise.all(newsFiles).then(function(values) {
 // Creates display of a random news image from anywhere in the country.
 function countryNews() {
     d3.select("#no_photo").remove();
-    d3.select("#news").select("p").text("Random Newspaper Image from the USA");
+    d3.select("#news").select("p").text("Random Newspaper Photo from the USA");
     let randomState = newsNav[Math.floor(Math.random() * newsNav.length)];
     let randomCityNum = Math.floor(Math.random() * Object.keys(randomState["cities"]).length);
     let randomCityList;
@@ -189,7 +218,7 @@ function stateNews(i) {
     d3.select("#no_photo").remove();
     state = newsNav[i];
     if (Object.keys(state["cities"]).length > 0) {
-        d3.select("#news").select("p").text("Random Newspaper Image from " + state["state"]);
+        d3.select("#news").select("p").text("Random Newspaper Photo from " + state["state"]);
         let randomCityNum = Math.floor(Math.random() * Object.keys(state["cities"]).length);
         let randomCityList;
         let i = 0;
@@ -226,7 +255,7 @@ function cityNews(i, city) {
     }
     state = newsNav[i];
     if (city in state["cities"]) {
-        d3.select("#news").select("p").text("Random Newspaper Image from " + name);
+        d3.select("#news").select("p").text("Random Newspaper Photo from " + name);
         cityList = state["cities"][city];
         let randomItem = cityList[Math.floor(Math.random() * cityList.length)];
         d3.select("#news").select("a")

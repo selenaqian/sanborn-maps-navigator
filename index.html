@@ -23,7 +23,34 @@
       <div class="modal-content">
           <span class="close">&times;</span>
           <h2>Welcome to the Sanborn Maps Navigator!</h2>
+          <br>
           <p>Click on areas of the map, images, or text to explore more. As you click on different states, counties, and cities, the Sanborn maps that show up and the random newspaper image will update based on your selection. If you want to backtrack, click on an earlier part of your path.</p>
+          <br>
+          <!-- Slideshow container -->
+          <div class="slideshow-container">
+
+          <!-- Full-width images with number and caption text -->
+          <div class="mySlides fade">
+              <img class="slidesImg" src="data/site-instructions-1.gif">
+            <div class="text">Click on different areas of the map to see updated results.</div>
+          </div>
+
+          <div class="mySlides fade">
+            <img class="slidesImg" src="data/site-instructions-2.gif">
+            <div class="text">Click on the path to backtrack. Also, you can click on the photos and text instead of the map.</div>
+          </div>
+
+          <!-- Next and previous buttons -->
+          <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+          <a class="next" onclick="plusSlides(1)">&#10095;</a>
+          </div>
+          <br>
+
+          <!-- The dots/circles -->
+          <div style="text-align:center">
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+          </div>
       </div>
   </div>
     <div class="wrapper">
