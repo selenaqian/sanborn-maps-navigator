@@ -276,7 +276,7 @@ function cityClicked(d) {
     console.log(d);
     console.log(x, y, k);
     if (d && centered !== d.id) { //centers on city that was clicked
-        d3.select('#results').selectAll('*').remove();
+        d3.select('#results-flex').selectAll('*').remove();
         d3.select("#cityError").text("");
         d3.select("#legend").selectAll("*").remove();
         g.selectAll('.city').classed('active', false);
@@ -312,7 +312,7 @@ function countyClicked(d, i) {
     d3.select("#legend").selectAll("*").remove();
     d3.select("#cityError").text("");
   if (d && d.properties.count > 0 && centered !== d.id) { //centers on county that was clicked
-    d3.select('#results').selectAll('*').remove();
+    d3.select('#results-flex').selectAll('*').remove();
     var centroid = path.centroid(d);
     x = centroid[0];
     y = centroid[1];
@@ -352,7 +352,7 @@ function stateClicked(d, i) {
     y = centroid[1];
     k = 4;
     centered = d.id;
-    d3.select('#results').selectAll('*').remove();
+    d3.select('#results-flex').selectAll('*').remove();
     if(d.id < 57) {
         d3.select("#s" + String(d.id)).classed("active", true);
         displayAllCountyResults(sanborn[stateIdToIndex.get(d.id)]);
@@ -372,7 +372,7 @@ function stateClicked(d, i) {
 
 function zoomout() {
     countryNews();
-    d3.select("#results").selectAll("*").remove();
+    d3.select("#results-flex").selectAll("*").remove();
     d3.select("#state").text("");
     d3.select("#county").text("");
     d3.select("#city").text("");
@@ -399,14 +399,14 @@ function zoomout() {
 // takes in a parameter of the entire city object.
 function displayAllItemResults(jsonObj) {
     d3.select("#city").text("> " + jsonObj["city"]).on("click", function() {
-        d3.select("#results").selectAll("*").remove();
+        d3.select("#results-flex").selectAll("*").remove();
         displayAllItemResults(jsonObj); });
 
   let l = jsonObj["items"].length;
   for (let i = 0; i < l; i++) {
     let item = jsonObj["items"][i];
 
-    div = d3.select("#results").append("div");
+    div = d3.select("#results-flex").append("div");
     div.classed("results-item", true).append("p")
         .append("a")
         .text(getDate(item["date"]))
@@ -439,7 +439,7 @@ function displayAllCityResults(jsonObj) {
     let randomItemNum = Math.floor(Math.random() * city["items"].length);
     let randomItem = city["items"][randomItemNum];
     
-    div = d3.select("#results").append("div");
+    div = d3.select("#results-flex").append("div");
     div.classed("results-item", true)
         .on("click", function() { 
         let data_id = city["city"].replace(/\s+/g, '') + d3.select("#state").text().substr(2).replace(/\s+/g, ''); //figure out the id
@@ -474,7 +474,7 @@ function displayAllCountyResults(jsonObj) {
     let randomItemNum = Math.floor(Math.random() * randomCity["items"].length);
     let randomItem = randomCity["items"][randomItemNum];
       
-    div = d3.select("#results").append("div");
+    div = d3.select("#results-flex").append("div");
     div.classed("results-item", true)
       .on("click", function() { 
         countyClicked(idToObject.get(county["fips"][0])); })
@@ -511,7 +511,7 @@ function displayAllStateResults(jsonObj) {
     let randomItemNum = Math.floor(Math.random() * randomCity["items"].length);
     let randomItem = randomCity["items"][randomItemNum];
       
-    div = d3.select("#results").append("div")
+    div = d3.select("#results-flex").append("div")
     div.classed("results-item", true)
       .on("click", function() { 
         stateClicked(idToObject.get(i)); })
