@@ -275,9 +275,21 @@ function cityNews(i, city) {
 function addNewsInfo(newsItem, lccn, randomArea) {
     let newsText = d3.select("#news-text");
     newsText.selectAll("*").remove();
-    newsText.append("p").text("Newspaper: " + newsItem["name"].replace("[volume]", "").trim());
-    newsText.append("p").text("Publication location: " + lccn);
-    newsText.append("p").text("Date: " + getDate(newsItem["pub_date"]));
+    newsText.append("p").text("Newspaper: ")
+        .append("a")
+        .attr("href", "https://chroniclingamerica.loc.gov/lccn/" + newsItem["site_url"].split("/")[0])
+        .attr("target", "_blank")
+        .text(newsItem["name"].replace("[volume]", "").trim());
+    newsText.append("p").text("Publication location: ")
+        .append("a")
+        .attr("href", "https://chroniclingamerica.loc.gov/titles/places/" + lccn.split(", ")[1].toLowerCase().replace(" ", "_"))
+        .attr("target", "_blank")
+        .text(lccn);
+    newsText.append("p").text("Date: ")
+        .append("a")
+        .attr("href", "https://chroniclingamerica.loc.gov/lccn/" + newsItem["site_url"])
+        .attr("target", "_blank")
+        .text(getDate(newsItem["pub_date"]));
     newsText.append("p").text("Selected from " + randomArea);
 }
 
