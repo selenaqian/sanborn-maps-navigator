@@ -123,7 +123,7 @@ Promise.all([cities, usa]).then(function(values) {
     for(let i = 0; i < values[1].objects.states.geometries.length; i++) {
         idToObject.set(i, states[i]);
     }
-    g.append("g")
+    g.attr("style", "cursor: pointer").append("g")
         .selectAll("path")
         .data(topojson.feature(values[1], values[1].objects.states).features)
         .enter().append("path")
@@ -466,9 +466,9 @@ function displayAllCityResults(jsonObj) {
     div = d3.select("#results-flex").append("div");
     div.classed("results-item", true)
         .on("click", function() { 
-        let data_id = city["city"].replace(/\s+/g, '') + d3.select("#state").text().substr(2).replace(/\s+/g, ''); //figure out the id
+        let data_id = city["city"].replace(/\s+/g, '') + d3.select("#state").text().replace(/\s+/g, ''); //figure out the id
         cityClicked(idToObject.get(data_id)); }) //get the data object from the mapped pairs
-        .append("p").text(city["city"]);
+        .append("p").text(city["city"]).classed("results-text", true);
     div.append("img")
       .attr("src", randomItem["thumbnail_urls"][0]);
   }
@@ -483,7 +483,6 @@ function displayAllCountyResults(jsonObj) {
     d3.select("#state").text(jsonObj["state"]).on("click", function() { 
         let stateName = d3.select("#state").text();
         stateClicked(idToObject.get(stateNameToId.get(stateName))); });
-    console.log(stateNameToId.get(d3.select("#state").text()));
     d3.select("#arrow1").classed("visible", true);
     d3.select("#arrow2").classed("visible", false);
     d3.select("#arrow3").classed("visible", false);
@@ -506,7 +505,7 @@ function displayAllCountyResults(jsonObj) {
     div.classed("results-item", true)
       .on("click", function() { 
         countyClicked(idToObject.get(county["fips"][0])); })
-        .append("p").text(county["county"]);
+        .append("p").text(county["county"]).classed("results-text", true);
     div.append("img")
       .attr("src", randomItem["thumbnail_urls"][0]);
   }
@@ -547,7 +546,7 @@ function displayAllStateResults(jsonObj) {
       .on("click", function() { 
         stateClicked(idToObject.get(i)); })
         .append("p")
-        .text(stateObj["state"]);
+        .text(stateObj["state"]).classed("results-text", true);
     div.append("img")
       .attr("src", randomItem["thumbnail_urls"][0]);
   }

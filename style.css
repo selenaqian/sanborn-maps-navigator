@@ -198,6 +198,7 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-decoration: underline;
+  cursor: pointer;
 }
 
 .path-element:active {
@@ -257,7 +258,7 @@ body {
 
 #results-flex {
   display: flex;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
 }
 
 .results-item {
@@ -272,6 +273,11 @@ body {
 .results-text {
     text-decoration: none;
     color: black;
+    cursor: pointer;
+}
+
+.results-item img {
+    cursor: pointer;
 }
 
 .main-footer {
