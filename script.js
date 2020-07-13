@@ -434,6 +434,7 @@ function displayAllItemResults(jsonObj) {
     d3.select("#arrow1").classed("visible", true);
     d3.select("#arrow2").classed("visible", true);
     d3.select("#arrow3").classed("visible", true);
+    d3.select("#results-header").text("Sanborn Maps from " + jsonObj["city"]);
 
   let l = jsonObj["items"].length;
   for (let i = 0; i < l; i++) {
@@ -466,6 +467,7 @@ function displayAllCityResults(jsonObj) {
     d3.select("#arrow1").classed("visible", true);
     d3.select("#arrow2").classed("visible", true);
     d3.select("#arrow3").classed("visible", false);
+    d3.select("#results-header").text("Sanborn Maps from Cities in " + jsonObj["county"]);
 
   let l = jsonObj["cities"].length;
   for (let i = 0; i < l; i++) {
@@ -498,6 +500,7 @@ function displayAllCountyResults(jsonObj) {
     d3.select("#arrow1").classed("visible", true);
     d3.select("#arrow2").classed("visible", false);
     d3.select("#arrow3").classed("visible", false);
+    d3.select("#results-header").text("Sanborn Maps from Counties in " + jsonObj["state"]);
 
   let l = jsonObj["counties"].length;
   for (let i = 0; i < l; i++) {
@@ -533,6 +536,7 @@ function displayAllStateResults(jsonObj) {
     d3.select("#arrow1").classed("visible", false);
     d3.select("#arrow2").classed("visible", false);
     d3.select("#arrow3").classed("visible", false);
+    d3.select("#results-header").text("Sanborn Maps from States in the USA");
   let l = jsonObj.length;
   for (let i = 0; i < l; i++) {
     let stateObj = jsonObj[i];
