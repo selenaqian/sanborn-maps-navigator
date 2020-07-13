@@ -193,7 +193,6 @@ Promise.all(newsFiles).then(function(values) {
 // Creates display of a random news image from anywhere in the country.
 function countryNews() {
     d3.select("#no_photo").remove();
-    d3.select("#news").select("p").text("Random Newspaper Photo from the USA");
     let randomState = newsNav[Math.floor(Math.random() * newsNav.length)];
     let randomCityNum = Math.floor(Math.random() * Object.keys(randomState["cities"]).length);
     let randomCityList;
@@ -201,6 +200,7 @@ function countryNews() {
     for(var index in randomState["cities"]) {
         if (i == randomCityNum) {
             randomCityList = randomState["cities"][index];
+            cityName = toTitleCase(index);
         }
         i++;
     }
@@ -210,6 +210,7 @@ function countryNews() {
         .attr("target", "_blank")
         .select("img")
         .attr("src", "https://news-navigator.labs.loc.gov/data/" + randomItem["url"]);
+    addNewsInfo(randomItem, cityName + ", " + randomState["state"], "the entire USA");
 }
 
 // Creates display of random news image from anywhere in one state.
@@ -218,13 +219,13 @@ function stateNews(i) {
     d3.select("#no_photo").remove();
     state = newsNav[i];
     if (Object.keys(state["cities"]).length > 0) {
-        d3.select("#news").select("p").text("Random Newspaper Photo from " + state["state"]);
         let randomCityNum = Math.floor(Math.random() * Object.keys(state["cities"]).length);
-        let randomCityList;
+        let randomCityList, cityName;
         let i = 0;
         for(var index in state["cities"]) {
             if (i == randomCityNum) {
                 randomCityList = state["cities"][index];
+                cityName = toTitleCase(index);
             }
             i++;
         }
@@ -234,6 +235,7 @@ function stateNews(i) {
             .attr("target", "_blank")
             .select("img")
             .attr("src", "https://news-navigator.labs.loc.gov/data/" + randomItem["url"]);
+        addNewsInfo(randomItem, cityName + ", " + state["state"], state["state"]);
     }
     else {
         d3.select("#news").select("p")
@@ -248,14 +250,9 @@ function stateNews(i) {
 // If the city is not available in the newspaper dataset, then the function will add an extra line of text stating that there are no available photos from newspapers in that city.
 function cityNews(i, city) {
     d3.select("#no_photo").remove();
-    let citySplit = city.split(" ");
-    let name = "";
-    for (let i = 0; i < citySplit.length; i++) {
-        name += citySplit[i].charAt(0) + citySplit[i].slice(1).toLowerCase() + " ";
-    }
+    let name = toTitleCase(city);
     state = newsNav[i];
     if (city in state["cities"]) {
-        d3.select("#news").select("p").text("Random Newspaper Photo from " + name);
         cityList = state["cities"][city];
         let randomItem = cityList[Math.floor(Math.random() * cityList.length)];
         d3.select("#news").select("a")
@@ -263,6 +260,7 @@ function cityNews(i, city) {
             .attr("target", "_blank")
             .select("img")
             .attr("src", "https://news-navigator.labs.loc.gov/data/" + randomItem["url"]);
+        addNewsInfo(randomItem, name + ", " + state["state"], name);
     }
     else {
         d3.select("#news").select("p")
@@ -270,6 +268,28 @@ function cityNews(i, city) {
             .attr("id", "no_photo")
             .text("No available photos from " + name);
     }
+}
+
+// Adds the newspaper name, location, and publication date based on metadata.
+// newsItem is the selected photo, lccn is the location, randomArea is the range of how large the area the random image was picked from (e.g. a state name or USA for the country).
+function addNewsInfo(newsItem, lccn, randomArea) {
+    let newsText = d3.select("#news-text");
+    newsText.selectAll("*").remove();
+    newsText.append("p").text("Newspaper: " + newsItem["name"].replace("[volume]", "").trim());
+    newsText.append("p").text("Publication location: " + lccn);
+    newsText.append("p").text("Date: " + getDate(newsItem["pub_date"]));
+    newsText.append("p").text("Selected from " + randomArea);
+}
+
+// Converts string to title case, where first letter of each word is capitalized.
+// str is the passed in string.
+function toTitleCase(str) {
+    let strSplit = str.split(" ");
+    let toReturn = "";
+    for (let i = 0; i < strSplit.length; i++) {
+        toReturn += strSplit[i].charAt(0) + strSplit[i].slice(1).toLowerCase() + " ";
+    }
+    return toReturn.trim();
 }
 
 function cityClicked(d) {
@@ -542,11 +562,16 @@ function getDate(date) {
   let item_split = date.split("-");
   let year = parseInt(item_split[0]);
   let month = 0;
-  if (item_split.length == 2) {
+  if (item_split.length > 1) {
     month = parseInt(item_split[1]);
   }
   if (month < 1 || month > 12) {
     return String(year);
   }
-  return months[month - 1] + " " + String(year);
+  if (item_split.length == 2) {
+     return months[month - 1] + " " + String(year);
+  }
+  else if (item_split.length == 3) {
+      return months[month - 1] + " " + String(item_split[2]) + ", " + String(year);
+  }
 }
