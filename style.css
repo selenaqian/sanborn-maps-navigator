@@ -227,7 +227,7 @@ body {
     max-width: 45%;
 }
 
-.news-flex {
+#news-flex {
     display: flex;
     text-decoration: none;
     color: black;
@@ -236,6 +236,7 @@ body {
 
 .news-element {
     padding-right: 5px;
+    max-width: 50%;
 }
 
 .results {
@@ -303,11 +304,6 @@ body {
     overflow-y: scroll;
     padding-right: 10px;
     margin-bottom: 15px;
-  }
-  .news img {
-    width: auto;
-    max-height: 150px;
-    max-width: 45%;
   }
   .results {
     overflow-y: scroll;
