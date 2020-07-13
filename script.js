@@ -293,8 +293,6 @@ function toTitleCase(str) {
 }
 
 function cityClicked(d) {
-    console.log(d);
-    console.log(x, y, k);
     if (d && centered !== d.id) { //centers on city that was clicked
         d3.select('#results-flex').selectAll('*').remove();
         d3.select("#cityError").text("");
@@ -418,9 +416,12 @@ function zoomout() {
 // shows first/cover thumbnail for this item.
 // takes in a parameter of the entire city object.
 function displayAllItemResults(jsonObj) {
-    d3.select("#city").text("> " + jsonObj["city"]).on("click", function() {
+    d3.select("#city").text(jsonObj["city"]).on("click", function() {
         d3.select("#results-flex").selectAll("*").remove();
         displayAllItemResults(jsonObj); });
+    d3.select("#arrow1").classed("visible", true);
+    d3.select("#arrow2").classed("visible", true);
+    d3.select("#arrow3").classed("visible", true);
 
   let l = jsonObj["items"].length;
   for (let i = 0; i < l; i++) {
@@ -446,10 +447,13 @@ function displayAllItemResults(jsonObj) {
 // takes in a parameter of the entire county object.
 function displayAllCityResults(jsonObj) {
     d3.select("#city").text("");
-    d3.select("#county").text("> " + jsonObj["county"])
+    d3.select("#county").text(jsonObj["county"])
         .on("click", function() { 
             countyClicked(idToObject.get(jsonObj["fips"][0]));
         });
+    d3.select("#arrow1").classed("visible", true);
+    d3.select("#arrow2").classed("visible", true);
+    d3.select("#arrow3").classed("visible", false);
 
   let l = jsonObj["cities"].length;
   for (let i = 0; i < l; i++) {
@@ -476,9 +480,13 @@ function displayAllCityResults(jsonObj) {
 function displayAllCountyResults(jsonObj) {
     d3.select("#county").text("");
     d3.select("#city").text("");
-    d3.select("#state").text("> " + jsonObj["state"]).on("click", function() { 
-        let stateName = d3.select("#state").text().substr(2);
+    d3.select("#state").text(jsonObj["state"]).on("click", function() { 
+        let stateName = d3.select("#state").text();
         stateClicked(idToObject.get(stateNameToId.get(stateName))); });
+    console.log(stateNameToId.get(d3.select("#state").text()));
+    d3.select("#arrow1").classed("visible", true);
+    d3.select("#arrow2").classed("visible", false);
+    d3.select("#arrow3").classed("visible", false);
 
   let l = jsonObj["counties"].length;
   for (let i = 0; i < l; i++) {
@@ -511,6 +519,9 @@ function displayAllStateResults(jsonObj) {
     d3.select("#state").text("");
     d3.select("#county").text("");
     d3.select("#city").text("");
+    d3.select("#arrow1").classed("visible", false);
+    d3.select("#arrow2").classed("visible", false);
+    d3.select("#arrow3").classed("visible", false);
   let l = jsonObj.length;
   for (let i = 0; i < l; i++) {
     let stateObj = jsonObj[i];

@@ -197,6 +197,7 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  text-decoration: underline;
 }
 
 .path-element:active {
@@ -207,6 +208,15 @@ body {
 .path-element:hover {
     overflow: visible;
     white-space: normal;
+}
+
+.arrow {
+    text-decoration: none;
+    visibility: hidden;
+}
+
+.visible {
+    visibility: visible;
 }
 
 .items-header {
