@@ -332,6 +332,17 @@ body {
     }
 }
 
+@media (min-aspect-ratio: 3/1) {
+    .wrapper {
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 90px 1fr 30px;
+        grid-template-areas:
+          "main-header  main-header main-header"
+          "main  sidebar-1 sidebar-2"
+          "footer  footer footer";
+    }
+}
+
 .background {
   fill: none;
   pointer-events: all;
