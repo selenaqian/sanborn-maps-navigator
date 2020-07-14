@@ -150,6 +150,13 @@
     stroke: #0A4053;
 }
 
+.tooltip {
+    z-index: 2;
+    color: black;
+    visibility: hidden;
+    position: absolute;
+}
+
 .svg-content {
     display: inline-block;
     max-height: 100%;

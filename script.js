@@ -106,6 +106,8 @@ svg.append("g").attr("id", "legend")
     .append("text").text("Number of Sanborn Maps from the State")
     .attr("x", 150).attr("y", -5).attr("id", "legendTitle");
 
+var tooltip = d3.select(".tooltip").text("test");
+
 Promise.all([cities, usa]).then(function(values) {    
     let counties = topojson.feature(values[1], values[1].objects.counties).features;
     let states = topojson.feature(values[1], values[1].objects.states).features;
@@ -174,7 +176,17 @@ Promise.all([cities, usa]).then(function(values) {
         .classed("state", true)
         .attr("id", function(d) { return "s" + d.id; })
         .attr("fill", function(d) { return stateColor(d.properties.count); })
-        .on("click", stateClicked);
+        .on("click", stateClicked)
+        .on("mouseover", function(d) { 
+            if (d) {
+                tooltip.text(d.id);
+            }
+            return tooltip.classed("visible", true); })
+        .on("mousemove", function() {
+            return tooltip
+                .style("left", event.pageX + "px")
+                .style("top", event.pageY + "px"); })
+        .on("mouseout", function() { return tooltip.classed("visible", false); });
 
   g.append("path")
       .datum(topojson.mesh(values[1], values[1].objects.states, function(a, b) { return a !== b; }))
@@ -209,7 +221,13 @@ function countryNews() {
         .attr("href", "https://chroniclingamerica.loc.gov/lccn/" + randomItem["site_url"])
         .attr("target", "_blank")
         .select("img")
-        .attr("src", "https://news-navigator.labs.loc.gov/data/" + randomItem["url"]);
+        .attr("src", "https://news-navigator.labs.loc.gov/data/" + randomItem["url"]).on("mouseover", function(d) {
+            return tooltip.classed("visible", true); })
+        .on("mousemove", function() {
+            return tooltip
+                .style("left", event.pageX + "px")
+                .style("top", event.pageY + "px"); })
+        .on("mouseout", function() { return tooltip.classed("visible", false); });
     addNewsInfo(randomItem, cityName + ", " + randomState["state"], "the entire USA");
 }
 
