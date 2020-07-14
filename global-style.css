@@ -1,0 +1,26 @@
+/* CSS files add styling rules to your content */
+
+* {
+  margin: 0px;
+  box-sizing:border-box
+}
+
+body {
+  font-family: verdana, geneva, sans-serif;
+  margin: 0;
+}
+
+.main-nav {
+  font-size: 14pt;
+  background-color: white;
+  grid-area: nav;
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+
+.nav-element {
+  margin-right: 25px;
+  color: black;
+  text-decoration: none;
+}
