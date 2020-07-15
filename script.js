@@ -162,7 +162,7 @@ Promise.all([cities, usa]).then(function(values) {
         .on("mousemove", function() {
             return tooltip
                 .style("left", event.pageX-10 + "px")
-                .style("top", event.pageY-30 + "px"); })
+                .style("top", event.pageY-5-tooltip.node().getBoundingClientRect().height + "px"); })
         .on("mouseout", function() { return tooltip.classed("visible", false); });
     
     g.append("g")
@@ -188,7 +188,7 @@ Promise.all([cities, usa]).then(function(values) {
             }
             return tooltip
                 .style("left", event.pageX-10 + "px")
-                .style("top", event.pageY-30 + "px"); })
+                .style("top", event.pageY-5-tooltip.node().getBoundingClientRect().height + "px"); })
         .on("mouseout", function() { return tooltip.classed("visible", false); });
 
   g.append("path")
@@ -213,7 +213,7 @@ Promise.all([cities, usa]).then(function(values) {
         .on("mousemove", function() {
             return tooltip
                 .style("left", event.pageX-10 + "px")
-                .style("top", event.pageY-30 + "px"); })
+                .style("top", event.pageY-5-tooltip.node().getBoundingClientRect().height + "px"); })
         .on("mouseout", function() { return tooltip.classed("visible", false); });
 
   g.append("path")
@@ -506,7 +506,7 @@ function displayAllItemResults(jsonObj) {
         .on("mousemove", function() {
             tooltip
                 .style("left", event.pageX-20 + "px")
-                .style("top", event.pageY-40 + "px"); })
+                .style("top", event.pageY-5-tooltip.node().getBoundingClientRect().height + "px"); })
         .on("mouseout", function() { return tooltip.classed("visible", false); })
         .append("img")
         .attr("src", item["thumbnail_urls"][0]);
