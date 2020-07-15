@@ -150,18 +150,46 @@ Promise.all([cities, usa]).then(function(values) {
         .attr("r", 1)
         .classed("city", "true")
         .attr("id", function(d) { return "city" + d.id; })
-        .on("click", cityClicked);
+        .on("click", cityClicked)
+        .on("mouseover", function(d) { 
+            if (d) {
+                let stateIndex = d.properties["state"];
+                let countyIndex = d.properties["county"];
+                let cityIndex = d.properties["city"];
+                tooltip.text(sanborn[stateIndex]["counties"][countyIndex]["cities"][cityIndex]["city"]);
+            }
+            return tooltip.classed("visible", true); })
+        .on("mousemove", function() {
+            return tooltip
+                .style("left", event.pageX-10 + "px")
+                .style("top", event.pageY-30 + "px"); })
+        .on("mouseout", function() { return tooltip.classed("visible", false); });
     
     g.append("g")
-      .attr("id", "counties")
-    .selectAll("path")
-      .data(topojson.feature(values[1], values[1].objects.counties).features)
-    .enter().append("path")
-      .attr("d", path)
-    .classed("county", true)
-    .attr("id", function(d) { return "c" + d.id; })
-    .attr("fill", function(d) { return countyColor(d.properties.count); })
-      .on("click", countyClicked);
+        .attr("id", "counties")
+        .selectAll("path")
+        .data(topojson.feature(values[1], values[1].objects.counties).features)
+        .enter().append("path")
+        .attr("d", path)
+        .classed("county", true)
+        .attr("id", function(d) { return "c" + d.id; })
+        .attr("fill", function(d) { return countyColor(d.properties.count); })
+        .on("click", countyClicked)
+        .on("mouseover", function(d) { 
+            if (d && d.properties.count > 0 && d.properties.index.length > 0) {
+                let stateIndex = d.properties.index[0]["state"];
+                let countyIndex = d.properties.index[0]["county"];
+                tooltip.text(sanborn[stateIndex]["counties"][countyIndex]["county"]);
+            }
+            return tooltip.classed("visible", true); })
+        .on("mousemove", function(d) {
+            if (d.properties.count == 0) {
+                tooltip.classed("visible", false);
+            }
+            return tooltip
+                .style("left", event.pageX-10 + "px")
+                .style("top", event.pageY-30 + "px"); })
+        .on("mouseout", function() { return tooltip.classed("visible", false); });
 
   g.append("path")
       .datum(topojson.mesh(values[1], values[1].objects.counties, function(a, b) { return a !== b; }))
@@ -179,13 +207,13 @@ Promise.all([cities, usa]).then(function(values) {
         .on("click", stateClicked)
         .on("mouseover", function(d) { 
             if (d) {
-                tooltip.text(d.id);
+                tooltip.text(sanborn[stateIdToIndex.get(d.id)]["state"]);
             }
             return tooltip.classed("visible", true); })
         .on("mousemove", function() {
             return tooltip
-                .style("left", event.pageX + "px")
-                .style("top", event.pageY + "px"); })
+                .style("left", event.pageX-10 + "px")
+                .style("top", event.pageY-30 + "px"); })
         .on("mouseout", function() { return tooltip.classed("visible", false); });
 
   g.append("path")
@@ -221,13 +249,7 @@ function countryNews() {
         .attr("href", "https://chroniclingamerica.loc.gov/lccn/" + randomItem["site_url"])
         .attr("target", "_blank")
         .select("img")
-        .attr("src", "https://news-navigator.labs.loc.gov/data/" + randomItem["url"]).on("mouseover", function(d) {
-            return tooltip.classed("visible", true); })
-        .on("mousemove", function() {
-            return tooltip
-                .style("left", event.pageX + "px")
-                .style("top", event.pageY + "px"); })
-        .on("mouseout", function() { return tooltip.classed("visible", false); });
+        .attr("src", "https://news-navigator.labs.loc.gov/data/" + randomItem["url"]);
     addNewsInfo(randomItem, cityName + ", " + randomState["state"], "the entire USA");
 }
 
@@ -466,10 +488,19 @@ function displayAllItemResults(jsonObj) {
         .attr("target", "_blank")
         .classed("results-text", true);
     div.append("a")
-      .attr("href", item["item_url"])
-      .attr("target", "_blank")
-      .append("img")
-      .attr("src", item["thumbnail_urls"][0]);
+        .attr("href", item["item_url"])
+        .attr("target", "_blank")
+        .on("mouseover", function() {
+            tooltip.text("Go to loc.gov page of " + getDate(item["date"]) + " atlas from " + jsonObj["city"])
+                .classed("visible", true);
+        })
+        .on("mousemove", function() {
+            tooltip
+                .style("left", event.pageX-20 + "px")
+                .style("top", event.pageY-40 + "px"); })
+        .on("mouseout", function() { return tooltip.classed("visible", false); })
+        .append("img")
+        .attr("src", item["thumbnail_urls"][0]);
   }
 }
 
