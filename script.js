@@ -416,6 +416,15 @@ function stateClicked(d, i) {
         .attr("transform", "translate(75, 25)").call(countyLegend)
         .append("text").text("Number of Sanborn Maps from the County")
         .attr("x", 100).attr("y", -5).attr("id", "legendTitle");
+    d3.select("#legend").append("rect")
+        .attr("fill", "white") //backup color
+        .attr("width", d3.select("#legend").node().getBBox().width + 10)
+        .attr("height", d3.select("#legend").node().getBBox().height + 5)
+        .attr("x", d3.select("#legend").node().getBBox().x - 5)
+        .attr("y", d3.select("#legend").node().getBBox().y)
+        .attr("fill", "rgba(255, 255, 255, 0.6)");
+    d3.select(".legendCells").raise();
+    d3.select("#legendTitle").raise();
   if (d && centered !== d.id) { //centers on state that was clicked
     var centroid = path.centroid(d);
     x = centroid[0];

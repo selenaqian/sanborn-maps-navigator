@@ -191,6 +191,10 @@
     white-space: normal;
 }
 
+#city {
+    text-decoration: none;
+}
+
 .arrow {
     text-decoration: none;
     visibility: hidden;
