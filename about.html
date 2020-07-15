@@ -20,7 +20,40 @@
           <a href="" class="nav-element">About</a>
         </nav>
       </div>
-      <p>Testing some text to see what happens</p>  
+        <h1>About the Sanborn Maps Navigator</h1>
+        <p>The Sanborn Maps Navigator project encourages exploration of and engagement with the Sanborn Fire Insurance Maps collection and images from the Newspaper Navigator dataset. This work is part of a larger effort to create new, experimental ways to present the Library of Congress's digital collections.</p>
+        <p>On this site, you can explore the Sanborn Fire Insurance Maps collection geographically. By clicking on different areas on the map, or on the items in the "Results from ..." section, you'll be able to see the Sanborn atlases from those areas. The newspaper photo will also update as you change geographic locations, randomly generating from within the chosen location. Once you get down to the city level, you can click on the images to lead you to the record and full scans on the Library of Congress's page, loc.gov. At any point, you can also click the newspaper photo.</p>
+        <image src="data/site-instructions-1.gif"></image>
+        <h2>The Collections</h2>
+        <h3>Sanborn Fire Insurance Maps</h3>
+        <p>A collection of 50,513 atlases created by the Sanborn Maps Company. Around 32,000 of these maps are currently available online and are, to the best of the Library's knowledge, in the public domain. These maps detail a rich history of architecture, providing building-by-building information from the respective times.</p>
+        <p>Each atlas has a front page that shows the different segments of the city contained in the inner pages. Details of these numbered segments can then be accessed by going to the respective inner page.</p>
+        <image alt="TODO: make this image and put it in"></image>
+        <p>For more, see the <a href="https://www.loc.gov/collections/sanborn-maps/" target="_blank">Library's website</a>.</p>
+        <h3>Newspaper Navigator Photos</h3>
+        <p>A dataset containing visual information pulled from the 16,358,041 historic newspaper pages in <a href="https://news-navigator.labs.loc.gov/" target="_blank">Chronicling America</a>. This content was identified using machine learning to find photos, illustrations, maps, cartoons, editorial cartoons, headlines, and ads. The Sanborn Maps Navigator project currently draws only from the photos, but there's much more out there to explore.</p>
+        <p>For more and to see the full datasets, go to the <a href="https://news-navigator.labs.loc.gov/" target="_blank">Newspaper Navigator page</a>.</p>
+        <br>
+        <h2>How This Was Made</h2>
+        <p>This section is going to be in an FAQ style. If you have any further questions, feel free to email me at <a href="mailto:selenaq2010@gmail.com">selenaq2010@gmail.com.</a></p>
+        <br>
+        <h3>Who made this?</h3>
+        <p>Hi! I'm Selena Qian, a rising senior at Duke University and a 2020 Junior Fellow at the Library of Congress. Specifically, I'm working in the in the Digital Strategy division of the Office of the Chief Information Officer (OCIO). This site has been my summer project, working remotely with the digital collections and presenting them in a new way. If you're interested in joining future Junior Fellows cohorts or exploring other Library internships, check out the <a href="https://www.loc.gov/internships-and-fellowships/" target="_blank">internships and fellowships page</a>.</p>
+        <br>
+        <h3>What are the goals of the project?</h3>
+        <p>I've had some firsthand experience with archival research, and it's definitely daunting. There's so much to go through and it can be really hard to figure out where to start. With this project, I'm hoping to connect more people to these rich sources of historical information and to make it more accessible. I hope that researchers will find it useful and interesting, though I'm focused on a more casual audience. So, I want it to be intuitive and easy-to-use. I also want people to have fun using it! That's why I brought in an element of randomness and surprise with the newspaper images — it'll be a little different every time, and hopefully it'll encourage people to keep exploring.</p>
+        <br>
+        <h3>Where's the data from?</h3>
+        <p>I collected the Sanborn data from the Library of Congress <a href="https://libraryofcongress.github.io/data-exploration/" target="_blank">API</a>, querying for the information I wanted. Similarly, I queried the Newspaper Navigator dataset for the files with the photo metadata. I then processed the data using Python 3 in Jupyter notebooks. I organized the Sanborn data by state, county, and city, and put this information in a JSON file because they're easy for both humans and machines to read. My file has a list of states, where each state contains this information:</p>
+        <image src="data/sanborn-format.png" alt="Sanborn JSON format description"></image>
+        <p>I organized the newspaper photo data by state and city, separating each state into its own file since the files were large. These files are named "photos-trimmed-[i].json", where [i] is the index of the state, including D.C., in alphabetical order (e.g. Alabama=0, Wyoming=50). This data includes the publication date, newspaper name, image url, and site url linking back to Chronicling America for each item.</p>
+        <p>The last piece of data is the actual geographic locations. I found a TopoJSON file of the states and counties online, with the FIPS codes attached already, meaning I could match them to the Sanborn data that I had. For the cities, I created a GeoJSON file first by creating a csv file of cities and states. Then, I ran that through an <a href="https://www.geocod.io/" target="_blank">online geocoder</a> and pulled the data out into the GeoJSON format. I gave the cities and counties properties that match up to the state, county, and city indices in the Sanborn data to make them easier to access when creating the interaction on the site.</p>
+        <p>For all the details on the data collection code and process, look at the files on my <a href="https://github.com/selenaqian/sanborn-maps-navigator/tree/master" target="_blank">GitHub</a>.</p>
+        <br>
+        <h3>How was the site made?</h3>
+        <p>I coded the site from scratch, working in HTML, CSS, and JavaScript. I learned and used JavaScript's <a href="https://d3js.org/" target="_blank">D3</a> library to create the interactive map visual and update the results sections. There was definitely a lot of googling happening throughout the entire process as I learned all of the different tools I would need to create the site.</p>
+        <br>
+        <footer class="main-footer">Material from Library of Congress collections. For source code, see <a href="https://github.com/selenaqian/sanborn-maps-navigator/tree/master" target="_blank">github.com/selenaqian</a></footer>
     </div>
   </body>
 </html>

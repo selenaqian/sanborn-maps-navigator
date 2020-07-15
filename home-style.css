@@ -271,11 +271,6 @@
 
 .main-footer {
   grid-area: footer;
-  padding: 5px 10px 10px 10px;
-  text-align: center;
-  color: white;
-  background-color: darkgray;
-  font-size: calc(6pt + 0.5vw);
 }
 
 .wrapper {
@@ -313,9 +308,6 @@
     overflow-y: scroll;
     padding-left: 10px;
   }
-    .main-footer {
-        font-size: 11pt;
-    }
 }
 
 @media (min-aspect-ratio: 3/1) {
