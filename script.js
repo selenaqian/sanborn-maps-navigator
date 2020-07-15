@@ -542,7 +542,16 @@ function displayAllCityResults(jsonObj) {
         cityClicked(idToObject.get(data_id)); }) //get the data object from the mapped pairs
         .append("p").text(city["city"]).classed("results-text", true);
     div.append("img")
-      .attr("src", randomItem["thumbnail_urls"][0]);
+        .attr("src", randomItem["thumbnail_urls"][0])
+        .on("mouseover", function() {
+            tooltip.text(randomItem["name"])
+                .classed("visible", true);
+        })
+        .on("mousemove", function() {
+            tooltip
+                .style("left", event.pageX-20 + "px")
+                .style("top", event.pageY-5-tooltip.node().getBoundingClientRect().height + "px"); })
+        .on("mouseout", function() { return tooltip.classed("visible", false); });
   }
 }
 
@@ -580,7 +589,16 @@ function displayAllCountyResults(jsonObj) {
         countyClicked(idToObject.get(county["fips"][0])); })
         .append("p").text(county["county"]).classed("results-text", true);
     div.append("img")
-      .attr("src", randomItem["thumbnail_urls"][0]);
+        .attr("src", randomItem["thumbnail_urls"][0])
+        .on("mouseover", function() {
+            tooltip.text(randomItem["name"])
+                .classed("visible", true);
+        })
+        .on("mousemove", function() {
+            tooltip
+                .style("left", event.pageX-20 + "px")
+                .style("top", event.pageY-5-tooltip.node().getBoundingClientRect().height + "px"); })
+        .on("mouseout", function() { return tooltip.classed("visible", false); });
   }
 }
 
@@ -622,7 +640,16 @@ function displayAllStateResults(jsonObj) {
         .append("p")
         .text(stateObj["state"]).classed("results-text", true);
     div.append("img")
-      .attr("src", randomItem["thumbnail_urls"][0]);
+        .attr("src", randomItem["thumbnail_urls"][0])
+        .on("mouseover", function() {
+            tooltip.text(randomItem["name"])
+                .classed("visible", true);
+        })
+        .on("mousemove", function() {
+            tooltip
+                .style("left", event.pageX-20 + "px")
+                .style("top", event.pageY-5-tooltip.node().getBoundingClientRect().height + "px"); })
+        .on("mouseout", function() { return tooltip.classed("visible", false); });
   }
 }
 
