@@ -1,4 +1,8 @@
+/** Pop-up box */
+
 d3.select(".close").on("click", function() { d3.select(".modal").attr("style", "display: none")})
+
+/** Slideshow within pop-up */
 
 var slideIndex = 1;
 showSlides(slideIndex);
@@ -13,11 +17,13 @@ function currentSlide(n) {
   showSlides(slideIndex = n);
 }
 
+// Shows the specified slide and hides the others.
+// n is the slide number.
 function showSlides(n) {
   var i;
   var slides = document.getElementsByClassName("mySlides");
   var dots = document.getElementsByClassName("dot");
-  if (n > slides.length) {slideIndex = 1}
+  if (n > slides.length) { slideIndex = 1 }
   if (n < 1) {slideIndex = slides.length}
   for (i = 0; i < slides.length; i++) {
       slides[i].style.display = "none";
@@ -29,8 +35,10 @@ function showSlides(n) {
   dots[slideIndex-1].className += " active";
 }
 
-let sanborn;
-var stateNameToId = new Map();
+let sanborn; // stores the loaded in Sanborn maps data
+var stateNameToId = new Map(); // used when areas outside of the map are clicked to match the state name information from the Sanborn data to the geographic shapes data - needed for zooming to the correct place on the map
+
+/** Loading in data */
 d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/sanborn-with-fips.json")
     .then(function(data) { displayAllStateResults(data);
                            sanborn = data; 
@@ -51,6 +59,7 @@ for(let i = 0; i < 51; i++) {
 //setting what clicking USA does
 d3.select("#country").on("click", function() { zoomout(); });
 
+/** Map set-up */
 var width = 800,
     height = 500,
     centered;
@@ -78,9 +87,10 @@ svg.append("text")
     .attr("id", "cityError")
     .attr("transform", "translate(200, 240)");
 
-var idToObject = new Map();
-var stateIdToIndex = new Map();
+var idToObject = new Map(); // used to correspond Sanborn data to geographic shapes
+var stateIdToIndex = new Map(); // used to corespond geographic shapes to Sanborn data
 
+/** Map chloropleth colors and legends */
 var stateColor = d3.scaleThreshold()
     .domain([0, 500, 1000, 1500, 2000, 2500])
     .range(["#eee", "#D0E5ED", "#71B2CA", "#137FA6", "#0E5F7D", "#0A4053"]);
@@ -106,12 +116,14 @@ svg.append("g").attr("id", "legend")
     .append("text").text("Number of Sanborn Maps from the State")
     .attr("x", 150).attr("y", -5).attr("id", "legendTitle");
 
-var tooltip = d3.select(".tooltip").text("test");
+var tooltip = d3.select(".tooltip");
 
+/** Add shape data to map visual */
 Promise.all([cities, usa]).then(function(values) {    
     let counties = topojson.feature(values[1], values[1].objects.counties).features;
     let states = topojson.feature(values[1], values[1].objects.states).features;
     
+    // Populate the data structures used for correspondence between geographic shapes and sanborn data
     for(let i = 0; i < values[1].objects.states.geometries.length; i++) {
         stateIdToIndex.set(states[i].id, i);
     }
@@ -125,6 +137,9 @@ Promise.all([cities, usa]).then(function(values) {
     for(let i = 0; i < values[1].objects.states.geometries.length; i++) {
         idToObject.set(i, states[i]);
     }
+    
+    // Add elements to map
+    // Elements are added in city, county, state order. This makes it possible to remove the fill from the upper layers to reveal the lower layers of the map.
     g.attr("style", "cursor: pointer").append("g")
         .selectAll("path")
         .data(topojson.feature(values[1], values[1].objects.states).features)
@@ -150,8 +165,8 @@ Promise.all([cities, usa]).then(function(values) {
         .attr("r", 1)
         .classed("city", "true")
         .attr("id", function(d) { return "city" + d.id; })
-        .on("click", cityClicked)
-        .on("mouseover", function(d) { 
+        .on("click", cityClicked) // calls function for what should happen - zoom in and display new results
+        .on("mouseover", function(d) { // changes tooltip and makes visible
             if (d) {
                 let stateIndex = d.properties["state"];
                 let countyIndex = d.properties["county"];
@@ -223,6 +238,7 @@ Promise.all([cities, usa]).then(function(values) {
     
 }).catch(function(error) { throw error; })
 
+// Load in Newspaper Navigator photo data.
 Promise.all(newsFiles).then(function(values) {
     for(let i = 0; i < 51; i++) {
         newsNav[i] = values[i];
@@ -344,6 +360,10 @@ function toTitleCase(str) {
     return toReturn.trim();
 }
 
+// called when a city is clicked.
+// centers on the clicked city.
+// calls results and news photo to update.
+// d is the geographic shape that was clicked.
 function cityClicked(d) {
     if (d && centered !== d.id) { //centers on city that was clicked
         d3.select('#results-flex').selectAll('*').remove();
@@ -371,42 +391,48 @@ function cityClicked(d) {
             .attr("transform", "translate(" + width/2 + "," + height/2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
             .style("stroke-width", 1.5/k + "px");
     }
-/**    else { //goes back to county
-        countyClicked(topojson.feature(usa, usa.objects.counties).features[d.properties["county"]], d.properties["county"]);
-  }*/
 }
 
+// called when a county is clicked.
+// centers on the clicked county and updates legend. will not work for counties that have no Sanborn maps results.
+// calls results to update.
+// d is the geographic shape that was clicked.
 function countyClicked(d, i) {
     g.selectAll(".county").classed("active", false);
     g.selectAll('.city').classed('active', false);
     d3.select("#legend").selectAll("*").remove();
     d3.select("#cityError").text("");
-  if (d && d.properties.count > 0 && centered !== d.id) { //centers on county that was clicked
-    d3.select('#results-flex').selectAll('*').remove();
-    var centroid = path.centroid(d);
-    x = centroid[0];
-    y = centroid[1];
-    k = 10;
-    centered = d.id;
-    for (a = 0; a < d.properties.index.length; a++) {
-        let stateIndex = d.properties.index[a]["state"];
-        let countyIndex = d.properties.index[a]["county"];
-        displayAllCityResults(sanborn[stateIndex]["counties"][countyIndex]);
+    if (d && d.properties.count > 0 && centered !== d.id) { //centers on county that was clicked
+        d3.select('#results-flex').selectAll('*').remove();
+        var centroid = path.centroid(d);
+        x = centroid[0];
+        y = centroid[1];
+        k = 10;
+        centered = d.id;
+        for (a = 0; a < d.properties.index.length; a++) {
+            let stateIndex = d.properties.index[a]["state"];
+            let countyIndex = d.properties.index[a]["county"];
+            displayAllCityResults(sanborn[stateIndex]["counties"][countyIndex]);
+        }
+        g.select("#c" + String(d.id)).classed("active", true);
+        
+        //zooming part
+        g.transition()
+            .duration(750)
+            .attr("transform", "translate(" + width/2 + "," + height/2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+            .style("stroke-width", 1.5 / k + "px");
+    } else { //goes back to state
+        usa.then(function(us) {
+            let index = Math.round(d.id/1000);
+            stateClicked(topojson.feature(us, us.objects.states).features[stateIdToIndex.get(index)], stateIdToIndex.get(index));
+        });
     }
-      g.select("#c" + String(d.id)).classed("active", true);
-    //zooming part
-  g.transition()
-      .duration(750)
-      .attr("transform", "translate(" + width/2 + "," + height/2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-      .style("stroke-width", 1.5 / k + "px");
-  } else { //goes back to state
-      usa.then(function(us) {
-          let index = Math.round(d.id/1000);
-          stateClicked(topojson.feature(us, us.objects.states).features[stateIdToIndex.get(index)], stateIdToIndex.get(index));
-      });
-  }
 }
 
+// called when a state is clicked.
+// centers on the clicked state and updates legend.
+// calls results and news photo to update.
+// d is the geographic shape that was clicked.
 function stateClicked(d, i) {
     g.selectAll("path").classed("active", false);
     g.selectAll('.city').classed('active', false);
@@ -425,30 +451,31 @@ function stateClicked(d, i) {
         .attr("fill", "rgba(255, 255, 255, 0.6)");
     d3.select(".legendCells").raise();
     d3.select("#legendTitle").raise();
-  if (d && centered !== d.id) { //centers on state that was clicked
-    var centroid = path.centroid(d);
-    x = centroid[0];
-    y = centroid[1];
-    k = 4;
-    centered = d.id;
-    d3.select('#results-flex').selectAll('*').remove();
-    if(d.id < 57) {
+    if (d && centered !== d.id) { //centers on state that was clicked
+        var centroid = path.centroid(d);
+        x = centroid[0];
+        y = centroid[1];
+        k = 4;
+        centered = d.id;
+        d3.select('#results-flex').selectAll('*').remove();
+        if(d.id < 57) {
+            d3.select("#s" + String(d.id)).classed("active", true);
+            displayAllCountyResults(sanborn[stateIdToIndex.get(d.id)]);
+            stateNews(stateIdToIndex.get(d.id));
+            //zooming part
+            g.transition()
+                .duration(750)
+                .attr("transform", "translate(" + width/2 + "," + height/2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+                .style("stroke-width", 1.5/k + "px");
+        }
+    } else if (centered == d.id) { // want to keep everything the same
         d3.select("#s" + String(d.id)).classed("active", true);
-        displayAllCountyResults(sanborn[stateIdToIndex.get(d.id)]);
-        stateNews(stateIdToIndex.get(d.id));
-        //zooming part
-        g.transition()
-            .duration(750)
-            .attr("transform", "translate(" + width/2 + "," + height/2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-            .style("stroke-width", 1.5/k + "px");
+    } else { // centers back on center of map
+        zoomout();
     }
-  } else if (centered == d.id) { // want to keep everything the same
-      d3.select("#s" + String(d.id)).classed("active", true);
-  } else { // centers back on center of map
-    zoomout();
-  }
 }
 
+// called when need to zoom back out to main (state-level) view of map.
 function zoomout() {
     countryNews();
     d3.select("#results-flex").selectAll("*").remove();
@@ -465,12 +492,12 @@ function zoomout() {
     y = height/2;
     k = 1;
     centered = null;
-     g.selectAll("path")
-      .classed("active", false);
+    g.selectAll("path")
+        .classed("active", false);
     g.transition()
-      .duration(750)
-      .attr("transform", "translate(" + width/2 + "," + (height/2+15) + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-      .style("stroke-width", 1.5/k + "px");
+        .duration(750)
+        .attr("transform", "translate(" + width/2 + "," + (height/2+15) + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+        .style("stroke-width", 1.5/k + "px");
 }
 
 // this function creates the display for all the item results of one city.
@@ -653,6 +680,7 @@ function displayAllStateResults(jsonObj) {
   }
 }
 
+// used for date conversion
 const months = [
   "January",
   "February",
@@ -670,19 +698,19 @@ const months = [
 
 // writes the date in a more readable format. converts from YYYY-MM to Month YYYY.
 function getDate(date) {
-  let item_split = date.split("-");
-  let year = parseInt(item_split[0]);
-  let month = 0;
-  if (item_split.length > 1) {
-    month = parseInt(item_split[1]);
-  }
-  if (month < 1 || month > 12) {
-    return String(year);
-  }
-  if (item_split.length == 2) {
-     return months[month - 1] + " " + String(year);
-  }
-  else if (item_split.length == 3) {
-      return months[month - 1] + " " + String(item_split[2]) + ", " + String(year);
-  }
+    let item_split = date.split("-");
+    let year = parseInt(item_split[0]);
+    let month = 0;
+    if (item_split.length > 1) {
+        month = parseInt(item_split[1]);
+    }
+    if (month < 1 || month > 12) {
+        return String(year);
+    }
+    if (item_split.length == 2) {
+        return months[month - 1] + " " + String(year);
+    }
+    else if (item_split.length == 3) {
+        return months[month - 1] + " " + String(item_split[2]) + ", " + String(year);
+    }
 }
