@@ -29,7 +29,7 @@ I used Python 3 in Jupyter notebooks to query the Library of Congress API and th
 
 For the full details, go to the Jupyter notebooks and Python code used to collect the data (listed below). I would recommend downloading or otherwise cloning the actual files and reading them in a different editor instead of reading them on this repository. There are a number of places where there's a long printed list of results used as an example that can make it difficult to find the next section.
 
-* [Sanborn data](data/sanborn/sanborn-maps-data.ipynb) - query Sanborn data and putting it all into one file TODO
+* [Sanborn data](data/sanborn/sanborn-maps-data.ipynb) - query Sanborn data and putting it all into one file
   * [Fix paginated states](data/sanborn/paginatedstate-fix-script.py) - when querying states that had multiple pages, my code treated each of those pages as a separate organization unit for reading and writing. This script fixed the duplicate counties that created. The original script could certainly be written in a way that would remedy this problem.
   * [Add the FIPS codes](data/sanborn/fips-connection/connect-fips-sanborn.py) TODO - read in the list of FIPS codes from a text file and match and add them to the Sanborn data.
     * [Web Scrape for County Name Changes](data/sanborn/fips-connection/county-namechanges-scraper.ipynb) TODO - as I was adding in FIPS codes, I noticed that there were some counties that didn't have matches. Part of that was due to county names that had changed since the time the historical collection material was created. So, I found a website online that showed changes in county names over time and used web scraping to pull that entire list and write it into a JSON file that I could use in the script to add FIPS codes.
