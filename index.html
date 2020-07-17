@@ -19,10 +19,10 @@
   </head>
   <body ontouchstart="">
   <!-- modal pop-up box -->
-  <div id="myModal" class="modal">
+  <div id="mainModal" class="modal visible">
       <!-- modal content -->
       <div class="modal-content">
-          <span class="close">&times;</span>
+          <span id="mainClose" class="close">&times;</span>
           <h2>Welcome to the Sanborn Maps Navigator!</h2>
           <br>
           <p>The Sanborn maps collection consists of over 50,000 historical maps, with around 32,000 of them currently available online. Click to explore the different places and discover more about the history with randomly selected historical newspaper photos from the area!</p>
@@ -52,6 +52,20 @@
             <span class="dot" onclick="currentSlide(1)"></span>
             <span class="dot" onclick="currentSlide(2)"></span>
           </div>
+      </div>
+  </div>
+  <!-- modal pop-up to Sanborns -->
+  <div id="sanbornModal" class="modal">
+      <!-- modal content -->
+      <div class="modal-content">
+          <span id="sanbornClose" class="close">&times;</span>
+          <h2>Heading to loc.gov ...</h2>
+          <br>
+          <p>You're going to an atlas! The first page has a key and shows you how many maps are in the atlas — and what areas each of those maps covers. These maps then show you details about the places.</p>
+          <br>
+          <img class="slidesImg" src="data/sanborn-explanation.gif">
+          <br>
+          <div class="button"><a href="">Continue</a></div>
       </div>
   </div>
     <div class="wrapper">

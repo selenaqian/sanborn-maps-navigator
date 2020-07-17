@@ -1,6 +1,7 @@
 /** Pop-up box */
 
-d3.select(".close").on("click", function() { d3.select(".modal").attr("style", "display: none")})
+d3.select("#mainClose").on("click", function() { d3.select("#mainModal").classed("visible", false); })
+d3.select("#sanbornClose").on("click", function() { d3.select("#sanbornModal").classed("visible", false); })
 
 /** Slideshow within pop-up */
 
@@ -516,16 +517,11 @@ function displayAllItemResults(jsonObj) {
   for (let i = 0; i < l; i++) {
     let item = jsonObj["items"][i];
 
-    div = d3.select("#results-flex").append("div");
+    let div = d3.select("#results-flex").append("div");
     div.classed("results-item", true).append("p")
-        .append("a")
         .text(getDate(item["date"]))
-        .attr("href", item["item_url"])
-        .attr("target", "_blank")
         .classed("results-text", true);
-    div.append("a")
-        .attr("href", item["item_url"])
-        .attr("target", "_blank")
+    div.append("img")
         .on("mouseover", function() {
             tooltip.text("Go to loc.gov page of " + getDate(item["date"]) + " atlas from " + jsonObj["city"])
                 .classed("visible", true);
@@ -535,8 +531,16 @@ function displayAllItemResults(jsonObj) {
                 .style("left", event.pageX-20 + "px")
                 .style("top", event.pageY-5-tooltip.node().getBoundingClientRect().height + "px"); })
         .on("mouseout", function() { return tooltip.classed("visible", false); })
-        .append("img")
         .attr("src", item["thumbnail_urls"][0]);
+    div.on("click", function() { 
+        d3.select("#sanbornModal")
+            .classed("visible", true)
+            .select("a")
+                .attr("href", item["item_url"])
+                .attr("target", "_blank")
+                .on("click", function() {
+                    d3.select("#sanbornModal").classed("visible", false); });
+    })
   }
 }
 
@@ -562,7 +566,7 @@ function displayAllCityResults(jsonObj) {
     let randomItemNum = Math.floor(Math.random() * city["items"].length);
     let randomItem = city["items"][randomItemNum];
     
-    div = d3.select("#results-flex").append("div");
+    let div = d3.select("#results-flex").append("div");
     div.classed("results-item", true)
         .on("click", function() { 
         let data_id = city["city"].replace(/\s+/g, '') + d3.select("#state").text().replace(/\s+/g, ''); //figure out the id
@@ -610,7 +614,7 @@ function displayAllCountyResults(jsonObj) {
     let randomItemNum = Math.floor(Math.random() * randomCity["items"].length);
     let randomItem = randomCity["items"][randomItemNum];
       
-    div = d3.select("#results-flex").append("div");
+    let div = d3.select("#results-flex").append("div");
     div.classed("results-item", true)
       .on("click", function() { 
         countyClicked(idToObject.get(county["fips"][0])); })
@@ -660,7 +664,7 @@ function displayAllStateResults(jsonObj) {
     let randomItemNum = Math.floor(Math.random() * randomCity["items"].length);
     let randomItem = randomCity["items"][randomItemNum];
       
-    div = d3.select("#results-flex").append("div")
+    let div = d3.select("#results-flex").append("div")
     div.classed("results-item", true)
       .on("click", function() { 
         stateClicked(idToObject.get(i)); })
