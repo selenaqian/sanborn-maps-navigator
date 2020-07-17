@@ -15,9 +15,10 @@ body {
 
 .button a {
     text-decoration: none;
-    color: black;
-    background-color: #ddd;
-    padding: calc(5px + 0.2vw);
+    color: white;
+    font-size: 10pt;
+    background-color: #0E5F7D;
+    padding: calc(5px + 0.2vw) calc(5px + 0.5vw);
     border-radius: calc(3px + 0.5vw);
 }
 
@@ -47,5 +48,13 @@ body {
 @media (min-width: 768px) {
     .main-footer {
         font-size: 11pt;
+    }
+    
+    .button {
+        margin: 15px auto;
+    }
+    
+    .button a {
+        font-size: 12pt;
     }
 }
