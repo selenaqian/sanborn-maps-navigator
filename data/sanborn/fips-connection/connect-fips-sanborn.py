@@ -1,3 +1,7 @@
+# Connect FIPS Location Codes to Sanborn Data
+
+# This script adds FIPS codes to the Sanborn maps metadata. These codes are unique identifiers of states and counties in the US. First, it reads in the FIPS codes for states and counties from a text file, along with the Sanborn data and the county name change information. The county name change information was taken from an online site, and this information was written into a JSON file using another script.
+
 import json
 from spellchecker import SpellChecker
 
@@ -120,6 +124,8 @@ for state in sanborn: # access each state and find the state code - to make sure
             else:
                 addtofix(state_name, county_name, ' not found')
 
+# Finally, write the found information to the files. The first file holds the locations whose FIPS codes were not properly found, while the second holds the Sanborn metadata with the FIPS codes added.
+                
 file = open('fips-to-fix.json', 'w')
 file.write(json.dumps(to_fix))
 file.close()
@@ -127,6 +133,3 @@ file.close()
 file = open('sanborn-with-fips.json', 'w')
 file.write(json.dumps(sanborn))
 file.close()
-
-# check fips codes on counties, remove not used, re-order
-# figure out how to convert to correct indices
