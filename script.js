@@ -42,6 +42,7 @@ var stateNameToId = new Map(); // used when areas outside of the map are clicked
 /** Loading in data */
 d3.json("https://raw.githubusercontent.com/selenaqian/sanborn-maps-navigator/master/data/sanborn-with-fips.json")
     .then(function(data) { displayAllStateResults(data);
+                           d3.select("#results").select(".loader").remove();
                            sanborn = data; 
                            for(let i = 0; i < sanborn.length; i++) {
                                stateNameToId.set(sanborn[i]["state"], i);
@@ -244,7 +245,10 @@ Promise.all(newsFiles).then(function(values) {
     for(let i = 0; i < 51; i++) {
         newsNav[i] = values[i];
     }
-}).then(countryNews)
+}).then(function() {
+        d3.select("#news").select(".loader").remove();
+        countryNews();
+    })
     .catch(function(error) { throw error; })
 
 // Creates display of a random news image from anywhere in the country.
