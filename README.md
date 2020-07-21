@@ -65,3 +65,5 @@ General:
 
 * [Mozilla Developer Network Web Docs](https://developer.mozilla.org/en-US/) - really useful for finding detailed and clear information on anything HTML, CSS, and JavaScript
 * [D3 docs](https://github.com/d3/d3/wiki) and [examples](https://observablehq.com/@d3/gallery) - JavaScript data visualization, animation, and interaction library
+
+Special thanks to Laurie Allen, my project mentor, and the rest of [LC Labs](https://labs.loc.gov/about/people/); to the creator of [Newspaper Navigator](https://labs.loc.gov/work/experiments/newspaper-navigator), Ben Lee, who's an Innovator in Residence at the Library; and to the [Geography & Maps Division](https://www.loc.gov/rr/geogmap/) who helped me learn about the history of the Sanborn maps and about how the collection was created and digitized.
