@@ -138,15 +138,25 @@
 .header {
   grid-area: main-header;
   display: grid;
-  grid-gap: 10px;
+  grid-gap: 5px;
   grid-template-columns: 100vw;
-  grid-template-rows: 40px 40px;
+  grid-template-rows: 40px 20px 40px;
   grid-template-areas:
     "nav"
+    "surprise"
     "bar";
   position: fixed;
   background-color: white;
     z-index: 1;
+}
+
+#surprise {
+    grid-area: surprise;
+    margin: auto;
+    padding: calc(2px + 0.2vw) calc(5px + 0.5vw);
+    color: white;
+    background-color: #0E5F7D;
+    border-radius: calc(3px + 0.5vw);
 }
 
 .map {
@@ -294,7 +304,7 @@
   width: 100vw;
   display: grid;
   grid-gap: 10px;
-  grid-template-rows: 90px 1fr 1fr 1fr 30px;
+  grid-template-rows: 110px 1fr 1fr 1fr 30px;
   grid-template-areas:
     "main-header"
     "main"
@@ -309,7 +319,7 @@
     }
   .wrapper {
     grid-template-columns: 3fr 2fr;
-    grid-template-rows: 90px 200px 3fr 30px;
+    grid-template-rows: 110px 200px 3fr 30px;
     grid-template-areas:
       "main-header  main-header"
       "main  sidebar-1"

@@ -11,12 +11,12 @@ body {
 .button {
     margin: 10px auto;
     text-align: center;
+    font-size: 10pt;
 }
 
 .button a {
     text-decoration: none;
     color: white;
-    font-size: 10pt;
     background-color: #0E5F7D;
     padding: calc(5px + 0.2vw) calc(5px + 0.5vw);
     border-radius: calc(3px + 0.5vw);
@@ -32,7 +32,7 @@ body {
 }
 
 .nav-element {
-  margin-right: 25px;
+  margin: 0px 15px;
   color: black;
   text-decoration: none;
 }
