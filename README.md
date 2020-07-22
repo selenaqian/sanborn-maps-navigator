@@ -1,5 +1,5 @@
 # sanborn-maps-navigator
-Interactive map search site created during Library of Congress Junior Fellows Program summer 2020.
+Interactive map search site created during Library of Congress Junior Fellows Program summer 2020. The site allows users to click different locations of the map to zoom in and see updated Sanborn Maps results. It also selects and displays a random historical newspaper image from the area (country, state, city - currently does not change for counties).
 
 ## Goals
 
@@ -19,7 +19,7 @@ For more on the collections, go to the [Library's website](https://www.loc.gov/c
 
 ### Newspaper Navigator Dataset
 
-A dataset containing visual information pulled from the 16,358,041 historic newspaper pages in [Chronicling America](https://chroniclingamerica.loc.gov/). This content was identified using machine learning to find photos, illustrations, maps, cartoons, editorial cartoons, headlines, and ads. The Sanborn Maps Navigator project currently draws only from the photos, but there's much more out there to explore.
+A dataset containing visual information pulled from the 16,358,041 historic newspaper pages in [Chronicling America](https://chroniclingamerica.loc.gov/). This content was identified using machine learning to find photos, illustrations, maps, cartoons, editorial cartoons, headlines, and ads. The Sanborn Maps Navigator project currently draws from the 1,494,585 photos from newspapers published in the locations of the maps. There's still much more out there to explore.
 
 For more and to see the full datasets, go to the [Newspaper Navigator page](https://news-navigator.labs.loc.gov/).
 
