@@ -157,6 +157,7 @@
     color: white;
     background-color: #0E5F7D;
     border-radius: calc(3px + 0.5vw);
+    cursor: pointer;
 }
 
 .map {

@@ -237,6 +237,11 @@ Promise.all([cities, usa]).then(function(values) {
       .datum(topojson.mesh(values[1], values[1].objects.states, function(a, b) { return a !== b; }))
       .attr("id", "state-borders")
       .attr("d", path);
+  
+  // set up surprise me button
+  d3.select("#surprise").on("click", function() { 
+      cities = values[0];
+      surpriseMe(); });
     
 }).catch(function(error) { throw error; })
 
@@ -250,6 +255,20 @@ Promise.all(newsFiles).then(function(values) {
         countryNews();
     })
     .catch(function(error) { throw error; })
+
+// Chooses a random city from the 8,508 cities and calls the respective clicked functions.
+// Needs to call stateClicked, then countyClicked, then cityClicked in order to get desired results.
+function surpriseMe() {
+    let randomCity = cities["features"][Math.floor(Math.random() * Object.keys(cities["features"]).length)];
+    console.log(randomCity);
+    let stateId = randomCity["properties"]["state"];
+    let countyIndex = randomCity["properties"]["county"];
+    let countyId = sanborn[stateId]["counties"][countyIndex]["fips"][0];
+    let cityIndex = randomCity["properties"]["city"];
+    stateClicked(idToObject.get(stateId));
+    countyClicked(idToObject.get(countyId));
+    cityClicked(randomCity);
+}
 
 // Creates display of a random news image from anywhere in the country.
 function countryNews() {
