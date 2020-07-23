@@ -257,7 +257,7 @@ Promise.all(newsFiles).then(function(values) {
     .catch(function(error) { throw error; })
 
 // Chooses a random city from the 8,508 cities and calls the respective clicked functions.
-// Needs to call stateClicked, then countyClicked, then cityClicked in order to get desired results.
+// Needs to call stateClicked, then countyClicked, then cityClicked in order to get desired results - each of these functions populates parts of the path and hides layers of the map svg to reveal the next layers. (state on top, then county, city)
 function surpriseMe() {
     let randomCity = cities["features"][Math.floor(Math.random() * Object.keys(cities["features"]).length)];
     console.log(randomCity);
@@ -266,8 +266,10 @@ function surpriseMe() {
     let countyId = sanborn[stateId]["counties"][countyIndex]["fips"][0];
     let cityIndex = randomCity["properties"]["city"];
     stateClicked(idToObject.get(stateId));
-    countyClicked(idToObject.get(countyId));
-    cityClicked(randomCity);
+    setTimeout(function() {
+        countyClicked(idToObject.get(countyId));
+        setTimeout(function() { cityClicked(randomCity); }, 1250);
+        }, 1250);
 }
 
 // Creates display of a random news image from anywhere in the country.
