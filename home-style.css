@@ -153,11 +153,13 @@
 #surprise {
     grid-area: surprise;
     margin: auto;
-    padding: calc(2px + 0.2vw) calc(5px + 0.5vw);
-    color: white;
-    background-color: #0E5F7D;
-    border-radius: calc(3px + 0.5vw);
-    cursor: pointer;
+}
+
+#back {
+    position: absolute;
+    z-index: 1;
+    top: 125px;
+    right: 5px;
 }
 
 .map {
@@ -334,6 +336,10 @@
   .results {
     overflow-y: scroll;
     padding-left: 10px;
+  }
+  #back {
+    top: 115px;
+    right: calc(40vw + 15px);
   }
 }
 
