@@ -1,5 +1,5 @@
 # sanborn-maps-navigator
-Interactive map search site created during Library of Congress Junior Fellows Program summer 2020. The site allows users to click different locations of the map to zoom in and see updated Sanborn Maps results. It also selects and displays a random historical newspaper image from the area (country, state, city - currently does not change for counties).
+Interactive map [search site](https://selenaqian.github.io/sanborn-maps-navigator/) created during Library of Congress Junior Fellows Program summer 2020. The site allows users to click different locations of the map to zoom in and see updated Sanborn Maps results. It also selects and displays a random historical newspaper image from the area (country, state, city - currently does not change for counties).
 
 ## Goals
 
