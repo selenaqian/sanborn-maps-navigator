@@ -391,6 +391,11 @@ function toTitleCase(str) {
 // calls results and news photo to update.
 // d is the geographic shape that was clicked.
 function cityClicked(d) {
+    d3.select("#back").on("click", function() {
+        let countyIndex = d.properties["county"];
+        let stateIndex = d.properties["state"];
+        countyClicked(idToObject.get(sanborn[stateIndex]["counties"][countyIndex]["fips"][0]));
+    }); //sets back to now go back to the county
     if (d && centered !== d.id) { //centers on city that was clicked
         d3.select('#results-flex').selectAll('*').remove();
         d3.select("#cityError").text("");
@@ -427,6 +432,10 @@ function countyClicked(d, i) {
     g.selectAll(".county").classed("active", false);
     g.selectAll('.city').classed('active', false);
     d3.select("#legend").selectAll("*").remove();
+    d3.select("#back").on("click", function() {
+        let stateName = d3.select("#state").text();
+        stateClicked(idToObject.get(stateNameToId.get(stateName)));
+    }); //sets back to now go back to the state
     d3.select("#cityError").text("");
     if (d && d.properties.count > 0 && centered !== d.id) { //centers on county that was clicked
         d3.select('#results-flex').selectAll('*').remove();
@@ -462,6 +471,8 @@ function countyClicked(d, i) {
 function stateClicked(d, i) {
     g.selectAll("path").classed("active", false);
     g.selectAll('.city').classed('active', false);
+    d3.select("#back").attr("style", "visibility: visible")
+        .on("click", function() { zoomout(); });
     d3.select("#legend").selectAll("*").remove();
     d3.select("#cityError").text("");
     d3.select("#legend")
@@ -504,6 +515,7 @@ function stateClicked(d, i) {
 // called when need to zoom back out to main (state-level) view of map.
 function zoomout() {
     countryNews();
+    d3.select("#back").attr("style", "");
     d3.select("#results-flex").selectAll("*").remove();
     d3.select("#state").text("");
     d3.select("#county").text("");

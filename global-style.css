@@ -14,6 +14,7 @@ body {
     padding: calc(2px + 0.2vw) calc(5px + 0.5vw);
     color: white;
     background-color: #0E5F7D;
+    border: 1px solid white;
     border-radius: calc(3px + 0.5vw);
     cursor: pointer;
 }

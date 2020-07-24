@@ -156,10 +156,12 @@
 }
 
 #back {
+    font-size: calc(6pt + 1vw);
     position: absolute;
     z-index: 1;
     top: 125px;
-    right: 5px;
+    right: 2vw;
+    visibility: hidden;
 }
 
 .map {
@@ -338,6 +340,7 @@
     padding-left: 10px;
   }
   #back {
+    font-size: 10pt;
     top: 115px;
     right: calc(40vw + 15px);
   }
