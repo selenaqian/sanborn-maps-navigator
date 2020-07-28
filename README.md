@@ -11,7 +11,7 @@ Introduce an element of serendipity in the connection to the time and place when
 
 ### Sanborn Fire Insurance Maps
 
-A collection of 50,513 atlases created by the Sanborn Maps Company. Around 32,000 of these maps are currently available online and are, to the best of the Library's knowledge, in the public domain. These maps detail a rich history of architecture, providing building-by-building information from the respective times.
+A collection of 50,513 atlases created by the Sanborn Maps Company. Around 32,000 of these atlases are currently available online and are, to the best of the Library's knowledge, in the public domain. These maps detail a rich history of architecture, providing building-by-building information from the respective times.
 
 Each atlas has a front page that shows the different segments of the city contained in the inner pages. Details of these numbered segments can then be accessed by going to the respective inner page.
 
