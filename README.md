@@ -52,6 +52,12 @@ For full code, see the files:
 * [Main page styling](home-style.css)
 * [About page styling](about-style.css)
 
+## Making Updates
+
+Since the site is driven by the data files, only the data files should need updating in order to change what shows on the site.
+
+See the [how-to-update notebook](how-to-update.ipynb) for full details and starter code.
+
 ## Resources
 
 Project-specific:
